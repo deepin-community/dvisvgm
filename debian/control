@@ -1,0 +1,31 @@
+Source: dvisvgm
+Section: tex
+Priority: optional
+Maintainer: Debian TeX Task Force <debian-tex-maint@lists.debian.org>
+Uploaders: Hilmar Preusse <hille42@web.de>,
+           Norbert Preining <norbert@preining.info>
+Build-Depends:
+ debhelper-compat (= 13),
+ libkpathsea-dev,
+ libbrotli-dev,
+ libwoff-dev,
+ libfreetype-dev,
+ libgs-dev,
+ pkg-config,
+ python3 <!nocheck>,
+ python3-lxml <!nocheck>
+Rules-Requires-Root: no
+Standards-Version: 4.6.0
+Homepage: https://dvisvgm.de/
+Vcs-Git: https://github.com/debian-tex/dvisvgm.git
+Vcs-Browser: https://github.com/debian-tex/dvisvgm
+
+Package: dvisvgm
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Breaks: texlive-binaries (<= 2019.20190605.51237-2)
+Replaces: texlive-binaries (<= 2019.20190605.51237-2)
+Enhances: texlive-binaries
+Description: DVI to SVG converter
+ dvisvgm is a utility for TeX/LaTeX users. It converts DVI, EPS, and
+ PDF files to the XML-based scalable vector graphics format SVG.

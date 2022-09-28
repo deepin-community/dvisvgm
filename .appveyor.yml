@@ -1,0 +1,35 @@
+version: 2.12-{build}
+configuration: Release
+
+image: Visual Studio 2019 Preview
+
+platform:
+  - x64
+  - Win32
+
+branches:
+   except:
+      - tmp
+
+install:
+  - set FREETYPE_VER=2.11.0
+  - set ZLIB_VER=1.2.11
+  - set TTFA_VER=1.8.2
+  - set TTFA_REV=3
+  - cd vc
+  - cd freetype
+  - appveyor DownloadFile http://download.savannah.gnu.org/releases/freetype/freetype-%FREETYPE_VER%.tar.gz
+  - tar xzf freetype-%FREETYPE_VER%.tar.gz --strip-components=1
+  - del freetype-%FREETYPE_VER%.tar.gz
+  - cd ..\zlib
+  - appveyor DownloadFile http://zlib.net/zlib-%ZLIB_VER%.tar.gz
+  - tar xzf zlib-%ZLIB_VER%.tar.gz --strip-components=1
+  - del zlib-%ZLIB_VER%.tar.gz
+  - cd ..
+  - appveyor DownloadFile https://github.com/mgieseki/ttfautohint-dll/releases/download/r%TTFA_VER%-%TTFA_REV%/ttfautohint-%TTFA_VER%-dll64.zip
+  - unzip -o -d ttfautohint ttfautohint-%TTFA_VER%-dll64.zip
+  - del ttfautohint-%TTFA_VER%-dll64.zip
+
+build:
+  project: vc\dvisvgm.sln
+  verbosity: minimal

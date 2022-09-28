@@ -1,0 +1,12 @@
+Tests: test-suite
+Architecture: !armhf
+Depends: build-essential,
+	libkpathsea-dev,
+	libbrotli-dev,
+	libwoff-dev,
+	libfreetype-dev,
+	libgs-dev,
+	pkg-config,
+	python3,
+	python3-lxml
+Restrictions: build-needed

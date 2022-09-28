@@ -1,0 +1,129 @@
+dvisvgm (2.12-3) unstable; urgency=medium
+
+  * Exclude armhf from autopkg test arches: it fails b/c of
+    ABI change warnings.
+
+ -- Hilmar Preusse <hille42@web.de>  Thu, 02 Sep 2021 14:28:07 +0200
+
+dvisvgm (2.12-2) unstable; urgency=medium
+
+  * Add build-essential as needed for autopkg test.
+  * Bump Standards Version to 4.6.0, no changes needded.
+  * Lintian overrride: debian-watch-does-not-check-gpg-signature
+
+ -- Hilmar Preusse <hille42@web.de>  Sat, 28 Aug 2021 08:19:22 +0200
+
+dvisvgm (2.12-1) unstable; urgency=medium
+
+  [ Helmut Grohne ]
+  * Annotate python dependencies used for testing <!nocheck>.
+    (Closes: #981500)
+
+  [ Hilmar Preusse ]
+  * New upstream release, refresh / update patches.
+  * Improve disable_GFGlyphTracerTest_executeChar.patch: comment unused
+    variable.
+  * Disable test suite in d/rules, readd as autopkgtest.
+
+ -- Hilmar Preusse <hille42@web.de>  Fri, 27 Aug 2021 09:14:36 +0200
+
+dvisvgm (2.11.1-1) unstable; urgency=medium
+
+  * New upstream version.
+    - Remove unneeded override_dh_auto_configure.
+    - Fix spelling errors in manual page.
+
+ -- Hilmar Preusse <hille42@web.de>  Tue, 26 Jan 2021 23:42:44 +0100
+
+dvisvgm (2.11-1) unstable; urgency=medium
+
+  * New upstream release. Add BD on python3-lxml.
+
+ -- Hilmar Preusse <hille42@web.de>  Sun, 29 Nov 2020 21:03:52 +0100
+
+dvisvgm (2.10.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Lintian:
+    - I: quilt-patch-missing-description
+    - I: debian-watch-contains-dh_make-template
+    - P: package-uses-old-debhelper-compat-version 11
+    - P: silent-on-rules-requiring-root
+    - I: conflicts-with-version texlive-binaries (x.y.z)
+
+ -- Hilmar Preusse <hille42@web.de>  Mon, 28 Sep 2020 23:50:04 +0200
+
+dvisvgm (2.10-1) unstable; urgency=medium
+
+  [ Debian Janitor ]
+  * debian/copyright: use spaces rather than tabs to start continuation lines.
+  * Set upstream metadata fields: Bug-Database, Bug-Submit, Repository,
+    Repository-Browse.
+
+  [ Norbert Preining ]
+  * New upstream version 2.10
+  * clean up patches
+  * bump standards version, no changes necessary
+
+ -- Hilmar Preusse <hille42@web.de>  Fri, 14 Aug 2020 22:04:45 +0200
+
+dvisvgm (2.9.1-1) unstable; urgency=medium
+
+  * New upstream release (Closes: #956484).
+
+ -- Hilmar Preusse <hille42@web.de>  Sun, 12 Apr 2020 00:05:37 +0200
+
+dvisvgm (2.9-1) unstable; urgency=medium
+
+  [ Norbert Preining ]
+  * New upstream version 2.9
+  * disable man page patch, does not apply
+
+ -- Hilmar Preusse <hille42@web.de>  Mon, 16 Mar 2020 11:28:47 +0100
+
+dvisvgm (2.8.2-1) unstable; urgency=medium
+
+  * New upstream version 2.8.2
+
+ -- Hilmar Preusse <hille42@web.de>  Fri, 06 Mar 2020 22:22:00 +0100
+
+dvisvgm (2.8.1-1) unstable; urgency=medium
+
+  * New upstream version 2.8.1
+
+ -- Norbert Preining <norbert@preining.info>  Tue, 26 Nov 2019 14:13:14 +0900
+
+dvisvgm (2.8-1) unstable; urgency=medium
+
+  [ Hilmar Preusse ]
+  * Add libgs-dev to BD (Closes: #940700)
+  * Add "Enhances: texlive-binaries"
+  * Change BD: libfreetype6-dev -> libfreetype-dev
+
+  [ Norbert Preining ]
+  * Use Python3 (Closes: #943008)
+  * New upstream version 2.8
+  * update patches
+
+ -- Norbert Preining <norbert@preining.info>  Tue, 05 Nov 2019 22:55:10 +0900
+
+dvisvgm (2.7.3-2) unstable; urgency=medium
+
+  [ Hilmar Preusse ]
+  * Fix debian watch file.
+  * Add patches:
+    - 56e0cf1c66b921e0a8abb844a4de8a0322e15311.patch
+      from upstream issue #116. It corrects rounding errors.
+    - disable_GFGlyphTracerTest_executeChar.patch
+      Disable GFGlyphTracerTest executeChar test according to upstream
+      #117 until we have a proper solution (Closes: #940268).
+
+    They fix the FTBFS on Hurd-i386, kfreebsd-i386 & Linux-i386.
+
+ -- Hilmar Preusse <hille42@web.de>  Tue, 17 Sep 2019 08:56:46 +0200
+
+dvisvgm (2.7.3-1) unstable; urgency=medium
+
+  * Initial release (Closes: #932968).
+
+ -- Hilmar Preusse <hille42@web.de>  Thu, 25 Jul 2019 06:09:20 +0200

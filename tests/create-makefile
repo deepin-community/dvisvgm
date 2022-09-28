@@ -1,0 +1,99 @@
+#!/bin/sh
+# This file is part of the dvisvgm package and published under the
+# terms of the GNU General Public License version 3 or later.
+# See file COPYING for further details.
+# Copyright (C) 2009-2021 Martin Gieseking <martin.gieseking@uos.de>
+
+out=Makefile.am
+cat >$out <<EOT
+## This file is part of dvisvgm
+## Copyright (C) 2005-2021 Martin Gieseking <martin.gieseking@uos.de>
+##
+## Process this file with automake.
+
+SUBDIRS = data
+
+check_LTLIBRARIES = libgtest.la
+libgtest_la_SOURCES = gtest/src/gtest-all.cc testmain.cpp
+libgtest_la_CPPFLAGS = -I\$(dvisvgm_srcdir)/tests/gtest/include -I\$(dvisvgm_srcdir)/tests/gtest
+libgtest_la_LDFLAGS = -pthread
+EXTRA_DIST = gtest/LICENSE \\
+	gtest/include \\
+	gtest/src/gtest.cc \\
+	gtest/src/gtest-death-test.cc \\
+	gtest/src/gtest-filepath.cc \\
+	gtest/src/gtest-internal-inl.h \\
+	gtest/src/gtest_main.cc \\
+	gtest/src/gtest-matchers.cc \\
+	gtest/src/gtest-port.cc \\
+	gtest/src/gtest-printers.cc \\
+	gtest/src/gtest-test-part.cc \\
+	gtest/src/gtest-typed-test.cc
+
+include ../libs/defs.am
+
+LIBS_CFLAGS = \$(XXHASH_CFLAGS)
+LIBS_LIBS   = \$(POTRACE_LIBS) \$(XXHASH_LIBS)
+if ENABLE_WOFF
+LIBS_LIBS  += \$(WOFF2_LIBS) \$(BROTLI_LIBS)
+endif
+
+if USE_BUNDLED_MD5
+LIBS_CFLAGS += -I\$(dvisvgm_srcdir)/libs/md5
+LIBS_LIBS   += ../libs/md5/libmd5.a
+else
+LIBS_CFLAGS += \$(LIBCRYPTO_CFLAGS)
+LIBS_LIBS   += \$(LIBCRYPTO_LIBS)
+endif
+
+AM_CXXFLAGS = -I\$(dvisvgm_srcdir)/src -I\$(dvisvgm_srcdir)/libs/variant/include \\
+	-Wall -Wno-mismatched-tags \\
+	-DBUILDDIR='"\$(abs_builddir)"' -DSRCDIR='"\$(abs_srcdir)"' \\
+	\$(CODE_COVERAGE_CFLAGS)
+
+TESTS = hashcheck
+check_PROGRAMS = hashcheck
+nodist_hashcheck_SOURCES = hashcheck.cpp
+hashcheck_CPPFLAGS = \$(LIBS_CFLAGS)
+hashcheck_LDADD = \$(LIBS_LIBS)
+
+hashcheck.cpp: genhashcheck.py \$(dvisvgm_srcdir)/src/AGLTable.hpp \$(dvisvgm_srcdir)/libs/xxHash/xxhash.h
+	python \$^ >\$@
+
+TESTLIBS = libgtest.la ../src/libdvisvgm.la \$(LIBS_LIBS) -lfreetype
+if ENABLE_WOFF
+TESTLIBS += ../libs/ff-woff/libfontforge.a
+endif
+TESTLIBS += \$(CODE_COVERAGE_LDFLAGS)
+
+EOT
+
+for f in *Test.cpp; do
+	base=`basename $f .cpp`
+	cat >>$out <<EOT
+TESTS += $base
+check_PROGRAMS += $base
+${base}_SOURCES = $f testutil.hpp
+${base}_CPPFLAGS = -I\$(dvisvgm_srcdir)/tests/gtest/include \$(LIBS_CFLAGS)
+${base}_LDADD = \$(TESTLIBS)
+
+EOT
+done
+
+#echo "TESTDATA =" >>$out
+#
+#for f in *.dvi; do
+#	base=`basename $f .dvi`
+#   echo  "TESTDATA += ${base}.dvi ${base}-wf-cmp.svg ${base}-nf-cmp.svg" >>$out
+#done
+
+cat >>$out <<EOT
+EXTRA_DIST += check-conv genhashcheck.py normalize.xsl
+TESTS += check-conv
+
+@CODE_COVERAGE_RULES@
+
+CLEANFILES = *.gcda *.gcno hashcheck.cpp
+EOT
+
+# vim: set syntax=sh:

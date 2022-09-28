@@ -1,0 +1,466 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{86046918-771F-4654-AFC5-AF4F8AC974EF}</ProjectGuid>
+    <RootNamespace>dvisvgm-vc</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</EmbedManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</EmbedManifest>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\vc;..\libs\clipper;..\libs\ff-woff\fontforge;..\libs\ff-woff\inc;..\libs\variant\include;..\libs\brotli\include;..\libs\md5;..\libs\potrace;..\libs\woff2\include;..\libs\xxhash;..\vc\freetype\include;..\vc\miktex-com\$(Platform)\$(Configuration);..\vc\ttfautohint\include;..\vc\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MIKTEX;HAVE_TTFAUTOHINT_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <OmitDefaultLibName>false</OmitDefaultLibName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>
+      </IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>
+      </DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <AssemblyDebug>true</AssemblyDebug>
+      <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <ImageHasSafeExceptionHandlers />
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\vc;..\libs\clipper;..\libs\ff-woff\fontforge;..\libs\ff-woff\inc;..\libs\variant\include;..\libs\brotli\include;..\libs\md5;..\libs\potrace;..\libs\woff2\include;..\libs\xxhash;..\vc\freetype\include;..\vc\miktex-com\$(Platform)\$(Configuration);..\vc\ttfautohint\include;..\vc\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MIKTEX;HAVE_TTFAUTOHINT_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <OmitDefaultLibName>false</OmitDefaultLibName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX64</TargetMachine>
+      <MinimumRequiredVersion />
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\vc;..\libs\clipper;..\libs\ff-woff\fontforge;..\libs\ff-woff\inc;..\libs\variant\include;..\libs\brotli\include;..\libs\md5;..\libs\potrace;..\libs\woff2\include;..\libs\xxhash;..\vc\freetype\include;..\vc\miktex-com\$(Platform)\$(Configuration);..\vc\ttfautohint\include;..\vc\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MIKTEX;HAVE_TTFAUTOHINT_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <Optimization>Full</Optimization>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <SubSystem>Console</SubSystem>
+      <AdditionalOptions>notelemetry.obj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <ImageHasSafeExceptionHandlers />
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\vc;..\libs\clipper;..\libs\ff-woff\fontforge;..\libs\ff-woff\inc;..\libs\variant\include;..\libs\brotli\include;..\libs\md5;..\libs\potrace;..\libs\woff2\include;..\libs\xxhash;..\vc\freetype\include;..\vc\miktex-com\$(Platform)\$(Configuration);..\vc\ttfautohint\include;..\vc\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MIKTEX;HAVE_TTFAUTOHINT_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <Optimization>Full</Optimization>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX64</TargetMachine>
+      <MinimumRequiredVersion />
+      <AdditionalOptions>notelemetry.obj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\BasicDVIReader.cpp" />
+    <ClCompile Include="..\src\Bezier.cpp" />
+    <ClCompile Include="..\src\BgColorSpecialHandler.cpp" />
+    <ClCompile Include="..\src\Bitmap.cpp" />
+    <ClCompile Include="..\src\BoundingBox.cpp" />
+    <ClCompile Include="..\src\Calculator.cpp" />
+    <ClCompile Include="..\src\CharMapID.cpp" />
+    <ClCompile Include="..\src\CLCommandLine.cpp" />
+    <ClCompile Include="..\src\CMap.cpp" />
+    <ClCompile Include="..\src\CMapManager.cpp" />
+    <ClCompile Include="..\src\CMapReader.cpp" />
+    <ClCompile Include="..\src\Color.cpp" />
+    <ClCompile Include="..\src\ColorSpecialHandler.cpp" />
+    <ClCompile Include="..\src\Directory.cpp" />
+    <ClCompile Include="..\src\DLLoader.cpp" />
+    <ClCompile Include="..\src\EllipticalArc.cpp" />
+    <ClCompile Include="..\src\HashFunction.cpp" />
+    <ClCompile Include="..\src\ImageToSVG.cpp" />
+    <ClCompile Include="..\src\Opacity.cpp" />
+    <ClCompile Include="..\src\optimizer\AttributeExtractor.cpp" />
+    <ClCompile Include="..\src\optimizer\GroupCollapser.cpp" />
+    <ClCompile Include="..\src\optimizer\RedundantElementRemover.cpp" />
+    <ClCompile Include="..\src\optimizer\SVGOptimizer.cpp" />
+    <ClCompile Include="..\src\optimizer\TextSimplifier.cpp" />
+    <ClCompile Include="..\src\optimizer\TransformSimplifier.cpp" />
+    <ClCompile Include="..\src\optimizer\WSNodeRemover.cpp" />
+    <ClCompile Include="..\src\SourceInput.cpp" />
+    <ClCompile Include="..\src\DVIReader.cpp" />
+    <ClCompile Include="..\src\dvisvgm.cpp" />
+    <ClCompile Include="..\src\DvisvgmSpecialHandler.cpp" />
+    <ClCompile Include="..\src\DVIToSVG.cpp" />
+    <ClCompile Include="..\src\DVIToSVGActions.cpp" />
+    <ClCompile Include="..\src\EmSpecialHandler.cpp" />
+    <ClCompile Include="..\src\EncFile.cpp" />
+    <ClCompile Include="..\src\EPSFile.cpp" />
+    <ClCompile Include="..\src\ffwrapper.c" />
+    <ClCompile Include="..\src\FileFinder.cpp">
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</MultiProcessorCompilation>
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MultiProcessorCompilation>
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</MultiProcessorCompilation>
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MultiProcessorCompilation>
+    </ClCompile>
+    <ClCompile Include="..\src\FilePath.cpp" />
+    <ClCompile Include="..\src\FileSystem.cpp" />
+    <ClCompile Include="..\src\Font.cpp" />
+    <ClCompile Include="..\src\FontCache.cpp" />
+    <ClCompile Include="..\src\FontEncoding.cpp" />
+    <ClCompile Include="..\src\FontEngine.cpp" />
+    <ClCompile Include="..\src\FontManager.cpp" />
+    <ClCompile Include="..\src\FontMap.cpp" />
+    <ClCompile Include="..\src\FontMetrics.cpp" />
+    <ClCompile Include="..\src\FontWriter.cpp" />
+    <ClCompile Include="..\src\GFGlyphTracer.cpp" />
+    <ClCompile Include="..\src\GFReader.cpp" />
+    <ClCompile Include="..\src\GFTracer.cpp" />
+    <ClCompile Include="..\src\Ghostscript.cpp" />
+    <ClCompile Include="..\src\HtmlSpecialHandler.cpp" />
+    <ClCompile Include="..\src\HyperlinkManager.cpp" />
+    <ClCompile Include="..\src\InputBuffer.cpp" />
+    <ClCompile Include="..\src\InputReader.cpp" />
+    <ClCompile Include="..\src\JFM.cpp" />
+    <ClCompile Include="..\src\Length.cpp" />
+    <ClCompile Include="..\src\MapLine.cpp" />
+    <ClCompile Include="..\src\Matrix.cpp" />
+    <ClCompile Include="..\src\Message.cpp" />
+    <ClCompile Include="..\src\MetafontWrapper.cpp" />
+    <ClCompile Include="..\src\MiKTeXCom.cpp">
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</MultiProcessorCompilation>
+      <EnableParallelCodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</EnableParallelCodeGeneration>
+      <EnableParallelCodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</EnableParallelCodeGeneration>
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MultiProcessorCompilation>
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</MultiProcessorCompilation>
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MultiProcessorCompilation>
+    </ClCompile>
+    <ClCompile Include="..\src\NoPsSpecialHandler.cpp" />
+    <ClCompile Include="..\src\PageRanges.cpp" />
+    <ClCompile Include="..\src\PageSize.cpp" />
+    <ClCompile Include="..\src\PapersizeSpecialHandler.cpp" />
+    <ClCompile Include="..\src\PathClipper.cpp" />
+    <ClCompile Include="..\src\PDFParser.cpp" />
+    <ClCompile Include="..\src\PdfSpecialHandler.cpp" />
+    <ClCompile Include="..\src\PreScanDVIReader.cpp" />
+    <ClCompile Include="..\src\Process.cpp" />
+    <ClCompile Include="..\src\psdefs.cpp" />
+    <ClCompile Include="..\src\PSInterpreter.cpp" />
+    <ClCompile Include="..\src\PSPattern.cpp" />
+    <ClCompile Include="..\src\PSPreviewFilter.cpp" />
+    <ClCompile Include="..\src\PsSpecialHandler.cpp" />
+    <ClCompile Include="..\src\RangeMap.cpp" />
+    <ClCompile Include="..\src\ShadingPatch.cpp" />
+    <ClCompile Include="..\src\SignalHandler.cpp" />
+    <ClCompile Include="..\src\SpecialManager.cpp" />
+    <ClCompile Include="..\src\StreamReader.cpp" />
+    <ClCompile Include="..\src\StreamWriter.cpp" />
+    <ClCompile Include="..\src\Subfont.cpp" />
+    <ClCompile Include="..\src\SVGCharHandler.cpp" />
+    <ClCompile Include="..\src\SVGCharHandlerFactory.cpp" />
+    <ClCompile Include="..\src\SVGCharPathHandler.cpp" />
+    <ClCompile Include="..\src\SVGElement.cpp" />
+    <ClCompile Include="..\src\SVGSingleCharTextHandler.cpp" />
+    <ClCompile Include="..\src\SVGCharTspanTextHandler.cpp" />
+    <ClCompile Include="..\src\SVGOutput.cpp" />
+    <ClCompile Include="..\src\SVGTree.cpp" />
+    <ClCompile Include="..\src\System.cpp" />
+    <ClCompile Include="..\src\TensorProductPatch.cpp" />
+    <ClCompile Include="..\src\Terminal.cpp" />
+    <ClCompile Include="..\src\TFM.cpp" />
+    <ClCompile Include="..\src\ToUnicodeMap.cpp" />
+    <ClCompile Include="..\src\TpicSpecialHandler.cpp" />
+    <ClCompile Include="..\src\TriangularPatch.cpp" />
+    <ClCompile Include="..\src\TrueTypeFont.cpp" />
+    <ClCompile Include="..\src\TTFAutohint.cpp" />
+    <ClCompile Include="..\src\Unicode.cpp" />
+    <ClCompile Include="..\src\utility.cpp" />
+    <ClCompile Include="..\src\VFReader.cpp" />
+    <ClCompile Include="..\src\XMLDocument.cpp" />
+    <ClCompile Include="..\src\XMLNode.cpp" />
+    <ClCompile Include="..\src\XMLString.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\AGLTable.hpp" />
+    <ClInclude Include="..\src\BasicDVIReader.hpp" />
+    <ClInclude Include="..\src\Bezier.hpp" />
+    <ClInclude Include="..\src\BgColorSpecialHandler.hpp" />
+    <ClInclude Include="..\src\Bitmap.hpp" />
+    <ClInclude Include="..\src\BoundingBox.hpp" />
+    <ClInclude Include="..\src\Calculator.hpp" />
+    <ClInclude Include="..\src\Character.hpp" />
+    <ClInclude Include="..\src\CharMapID.hpp" />
+    <ClInclude Include="..\src\CLCommandLine.hpp" />
+    <ClInclude Include="..\src\CMap.hpp" />
+    <ClInclude Include="..\src\CMapManager.hpp" />
+    <ClInclude Include="..\src\CMapReader.hpp" />
+    <ClInclude Include="..\src\Color.hpp" />
+    <ClInclude Include="..\src\ColorSpecialHandler.hpp" />
+    <ClInclude Include="..\src\CommandLine.hpp" />
+    <ClInclude Include="..\src\EllipticalArc.hpp" />
+    <ClInclude Include="..\src\HashFunction.hpp" />
+    <ClInclude Include="..\src\ImageToSVG.hpp" />
+    <ClInclude Include="..\src\MD5HashFunction.hpp" />
+    <ClInclude Include="..\src\Opacity.hpp" />
+    <ClInclude Include="..\src\optimizer\AttributeExtractor.hpp" />
+    <ClInclude Include="..\src\optimizer\DependencyGraph.hpp" />
+    <ClInclude Include="..\src\optimizer\GroupCollapser.hpp" />
+    <ClInclude Include="..\src\optimizer\OptimizerModule.hpp" />
+    <ClInclude Include="..\src\optimizer\RedundantElementRemover.hpp" />
+    <ClInclude Include="..\src\optimizer\SVGOptimizer.hpp" />
+    <ClInclude Include="..\src\optimizer\TextSimplifier.hpp" />
+    <ClInclude Include="..\src\optimizer\TransformSimplifier.hpp" />
+    <ClInclude Include="..\src\optimizer\WSNodeRemover.hpp" />
+    <ClInclude Include="..\src\PDFToSVG.hpp" />
+    <ClInclude Include="..\src\SourceInput.hpp" />
+    <ClInclude Include="..\src\EncFile.hpp" />
+    <ClInclude Include="..\src\EPSFile.hpp" />
+    <ClInclude Include="..\src\EPSToSVG.hpp" />
+    <ClInclude Include="..\src\ffwrapper.h" />
+    <ClInclude Include="..\src\FilePath.hpp" />
+    <ClInclude Include="..\src\FixWord.hpp" />
+    <ClInclude Include="..\src\FontMetrics.hpp" />
+    <ClInclude Include="..\src\FontWriter.hpp" />
+    <ClInclude Include="..\src\HtmlSpecialHandler.hpp" />
+    <ClInclude Include="..\src\JFM.hpp" />
+    <ClInclude Include="..\src\macros.hpp" />
+    <ClInclude Include="..\src\MapLine.hpp" />
+    <ClInclude Include="..\src\MiKTeXCom.hpp" />
+    <ClInclude Include="..\src\NoPsSpecialHandler.hpp" />
+    <ClInclude Include="..\src\NumericRanges.hpp" />
+    <ClInclude Include="..\src\PageRanges.hpp" />
+    <ClInclude Include="..\src\PapersizeSpecialHandler.hpp" />
+    <ClInclude Include="..\src\PathClipper.hpp" />
+    <ClInclude Include="..\src\PDFParser.hpp" />
+    <ClInclude Include="..\src\PdfSpecialHandler.hpp" />
+    <ClInclude Include="..\src\PreScanDVIReader.hpp" />
+    <ClInclude Include="..\src\Process.hpp" />
+    <ClInclude Include="..\src\PSFilter.hpp" />
+    <ClInclude Include="..\src\PSInterpreter.hpp" />
+    <ClInclude Include="..\src\PSPattern.hpp" />
+    <ClInclude Include="..\src\PSPreviewFilter.hpp" />
+    <ClInclude Include="..\src\PsSpecialHandler.hpp" />
+    <ClInclude Include="..\src\RangeMap.hpp" />
+    <ClInclude Include="..\src\ShadingPatch.hpp" />
+    <ClInclude Include="..\src\SignalHandler.hpp" />
+    <ClInclude Include="..\src\Subfont.hpp" />
+    <ClInclude Include="..\src\SVGCharHandler.hpp" />
+    <ClInclude Include="..\src\SVGCharHandlerFactory.hpp" />
+    <ClInclude Include="..\src\SVGCharPathHandler.hpp" />
+    <ClInclude Include="..\src\SVGElement.hpp" />
+    <ClInclude Include="..\src\SVGSingleCharTextHandler.hpp" />
+    <ClInclude Include="..\src\SVGCharTspanTextHandler.hpp" />
+    <ClInclude Include="..\src\SVGOutput.hpp" />
+    <ClInclude Include="..\src\System.hpp" />
+    <ClInclude Include="..\src\TensorProductPatch.hpp" />
+    <ClInclude Include="..\src\Terminal.hpp" />
+    <ClInclude Include="..\src\ToUnicodeMap.hpp" />
+    <ClInclude Include="..\src\TriangularPatch.hpp" />
+    <ClInclude Include="..\src\TrueTypeFont.hpp" />
+    <ClInclude Include="..\src\TTFAutohint.hpp" />
+    <ClInclude Include="..\src\Unicode.hpp" />
+    <ClInclude Include="..\src\utility.hpp" />
+    <ClInclude Include="..\src\VectorIterator.hpp" />
+    <ClInclude Include="..\src\XXHashFunction.hpp" />
+    <ClInclude Include="..\src\ZLibOutputStream.hpp" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="..\src\DVIActions.hpp" />
+    <ClInclude Include="..\src\DVIReader.hpp" />
+    <ClInclude Include="..\src\DvisvgmSpecialHandler.hpp" />
+    <ClInclude Include="..\src\DVIToSVG.hpp" />
+    <ClInclude Include="..\src\DVIToSVGActions.hpp" />
+    <ClInclude Include="..\src\FileFinder.hpp" />
+    <ClInclude Include="..\src\FileSystem.hpp" />
+    <ClInclude Include="..\src\Font.hpp" />
+    <ClInclude Include="..\src\FontCache.hpp" />
+    <ClInclude Include="..\src\FontEngine.hpp" />
+    <ClInclude Include="..\src\FontManager.hpp" />
+    <ClInclude Include="..\src\FontMap.hpp" />
+    <ClInclude Include="..\src\GFGlyphTracer.hpp" />
+    <ClInclude Include="..\src\GFReader.hpp" />
+    <ClInclude Include="..\src\GFTracer.hpp" />
+    <ClInclude Include="..\src\Ghostscript.hpp" />
+    <ClInclude Include="..\src\Glyph.hpp" />
+    <ClInclude Include="..\src\InputBuffer.hpp" />
+    <ClInclude Include="..\src\Length.hpp" />
+    <ClInclude Include="..\src\Message.hpp" />
+    <ClInclude Include="..\src\MessageException.hpp" />
+    <ClInclude Include="..\src\MetafontWrapper.hpp" />
+    <ClInclude Include="..\src\PageSize.hpp" />
+    <ClInclude Include="..\src\Pair.hpp" />
+    <ClInclude Include="..\src\SpecialActions.hpp" />
+    <ClInclude Include="..\src\SpecialHandler.hpp" />
+    <ClInclude Include="..\src\SpecialManager.hpp" />
+    <ClInclude Include="..\src\StreamWriter.hpp" />
+    <ClInclude Include="..\src\TFM.hpp" />
+    <ClInclude Include="..\src\TpicSpecialHandler.hpp" />
+    <ClInclude Include="..\src\XMLDocument.hpp" />
+    <ClInclude Include="..\src\XMLNode.hpp" />
+    <ClInclude Include="..\src\XMLString.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="brotli\brotli.vcxproj">
+      <Project>{c72bb6a5-318e-4d3f-8714-786094e2c6eb}</Project>
+    </ProjectReference>
+    <ProjectReference Include="clipper\clipper.vcxproj">
+      <Project>{98d8e34d-75b4-48b6-b175-c3a7df11e52c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="fontforge\ff-woff.vcxproj">
+      <Project>{2ea12a93-b90e-3f75-8d67-6b51f83a4298}</Project>
+    </ProjectReference>
+    <ProjectReference Include="freetype\freetype.vcxproj">
+      <Project>{78b079bd-9fc7-4b9e-b4a6-96da0f00248b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="md5\md5.vcxproj">
+      <Project>{01089eea-d32a-4a70-bdd4-221791380931}</Project>
+    </ProjectReference>
+    <ProjectReference Include="potrace\libpotrace.vcxproj">
+      <Project>{6f17fbf1-4304-4af2-81a8-c78787e8d0a5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="woff2\woff2.vcxproj">
+      <Project>{52c2c7c6-3bce-4434-9a02-ea920c15fb65}</Project>
+    </ProjectReference>
+    <ProjectReference Include="xxHash\xxhash.vcxproj">
+      <Project>{b3a84395-d889-4419-b313-b410350727fa}</Project>
+    </ProjectReference>
+    <ProjectReference Include="zlib\zlib.vcxproj">
+      <Project>{f296e0c2-0d37-44cd-961d-87681418683f}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="dvisvgm.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
