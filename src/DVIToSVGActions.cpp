@@ -2,7 +2,7 @@
 ** DVIToSVGActions.cpp                                                  **
 **                                                                      **
 ** This file is part of dvisvgm -- a fast DVI to SVG converter          **
-** Copyright (C) 2005-2021 Martin Gieseking <martin.gieseking@uos.de>   **
+** Copyright (C) 2005-2024 Martin Gieseking <martin.gieseking@uos.de>   **
 **                                                                      **
 ** This program is free software; you can redistribute it and/or        **
 ** modify it under the terms of the GNU General Public License as       **
@@ -33,10 +33,8 @@ using namespace std;
 
 
 void DVIToSVGActions::reset() {
-	_usedChars.clear();
-	_usedFonts.clear();
-	_bbox = BoundingBox();
-	_currentFontNum = -1;
+	FontManager::instance().resetUsedChars();
+	_bbox.invalidate();
 	_bgcolor = Color::TRANSPARENT;
 }
 
@@ -93,10 +91,7 @@ void DVIToSVGActions::setChar (double x, double y, unsigned c, bool vertical, co
 	// record font names and chars. The various font sizes can be ignored here.
 	// For a given font object, Font::uniqueFont() returns the same unique font object for
 	// all fonts with the same name.
-	_usedChars[SVGTree::USE_FONTS ? font.uniqueFont() : &font].insert(c);
-
-	// However, we record all required fonts
-	_usedFonts.insert(&font);
+	FontManager::instance().addUsedChar(font, c);
 	_svg.appendChar(c, x, y);
 
 	static string fontname;
@@ -188,7 +183,6 @@ void DVIToSVGActions::setRule (double x, double y, double height, double width) 
  *  @param[in] num unique number of the font in the DVI file (not necessarily equal to the DVI font number)
  *  @param[in] font pointer to the font object (always represents a physical font and never a virtual font) */
 void DVIToSVGActions::setFont (int num, const Font &font) {
-	_currentFontNum = num;
 	_svg.setFont(num, font);
 }
 
@@ -216,10 +210,11 @@ void DVIToSVGActions::special (const string &spc, double dvi2bp, bool preprocess
  *  @param[in] c array with 10 components representing \\count0 ... \\count9. c[0] contains the
  *               current (printed) page number (may differ from page count) */
 void DVIToSVGActions::beginPage (unsigned pageno, const vector<int32_t>&) {
-	SpecialManager::instance().notifyBeginPage(pageno, *this);
 	_svg.newPage(++_pageCount);
 	_bbox = BoundingBox();  // clear bounding box
 	_boxes.clear();
+	setMatrix(Matrix(1));
+	SpecialManager::instance().notifyBeginPage(pageno, *this);
 }
 
 
@@ -251,14 +246,14 @@ void DVIToSVGActions::setBgColor (const Color &color) {
 }
 
 
-void DVIToSVGActions::embed(const BoundingBox &bbox) {
+void DVIToSVGActions::embed (const BoundingBox &bbox) {
 	_bbox.embed(bbox);
 	for (auto &strboxpair : _boxes)
 		strboxpair.second.embed(bbox);
 }
 
 
-void DVIToSVGActions::embed(const DPair& p, double r) {
+void DVIToSVGActions::embed (const DPair& p, double r) {
 	if (r == 0)
 		_bbox.embed(p);
 	else
@@ -268,7 +263,7 @@ void DVIToSVGActions::embed(const DPair& p, double r) {
 }
 
 
-BoundingBox& DVIToSVGActions::bbox(const string& name, bool reset) {
+BoundingBox& DVIToSVGActions::bbox (const string& name, bool reset) {
 	BoundingBox &box = _boxes[name];
 	if (reset)
 		box = BoundingBox();

@@ -2,7 +2,7 @@
 ** DVIReader.cpp                                                        **
 **                                                                      **
 ** This file is part of dvisvgm -- a fast DVI to SVG converter          **
-** Copyright (C) 2005-2021 Martin Gieseking <martin.gieseking@uos.de>   **
+** Copyright (C) 2005-2024 Martin Gieseking <martin.gieseking@uos.de>   **
 **                                                                      **
 ** This program is free software; you can redistribute it and/or        **
 ** modify it under the terms of the GNU General Public License as       **
@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <vectorstream.hpp>
 #include "Color.hpp"
 #include "DVIActions.hpp"
 #include "DVIReader.hpp"
@@ -27,7 +28,6 @@
 #include "FontManager.hpp"
 #include "HashFunction.hpp"
 #include "utility.hpp"
-#include "VectorStream.hpp"
 
 using namespace std;
 
@@ -49,7 +49,7 @@ void DVIReader::executeAll () {
 		try {
 			opcode = executeCommand();
 		}
-		catch (const InvalidDVIFileException &e) {
+		catch (const DVIPrematureEOFException &e) {
 			// end of stream reached
 			opcode = -1;
 		}
@@ -64,7 +64,7 @@ void DVIReader::executeAll () {
 bool DVIReader::executePage (unsigned n) {
 	clearStream();    // reset all status bits
 	if (!isStreamValid())
-		throw DVIException("invalid DVI file");
+		throw DVIException("invalid DVI file (page "+to_string(n)+" not found");
 	if (n < 1 || n > numberOfPages())
 		return false;
 
@@ -204,10 +204,13 @@ void DVIReader::cmdPop (int) {
 void DVIReader::putVFChar (Font *font, uint32_t c) {
 	if (auto vf = font_cast<VirtualFont*>(font)) { // is current font a virtual font?
 		FontManager &fm = FontManager::instance();
-		const vector<uint8_t> *dvi = vf->getDVI(c);    // try to get DVI snippet that represents character c
+		const auto *dvi = vf->getDVI(c);    // try to get DVI snippet that represents character c
 		Font *firstFont = fm.vfFirstFont(vf);
-		if (!dvi && (!firstFont || !firstFont->getMetrics()->isJFM()))
-			return;
+		if (!dvi) {
+			const FontMetrics *ffm = firstFont ? firstFont->getMetrics() : nullptr;
+			if (!ffm || (!ffm->isJFM() && !ffm->isOFM()))
+				return;
+		}
 		fm.enterVF(vf);                              // enter VF font number context
 		int savedFontNum = _currFontNum;             // save current font number
 		setFont(fm.vfFirstFontNum(vf), SetFontMode::VF_ENTER);
@@ -219,8 +222,8 @@ void DVIReader::putVFChar (Font *font, uint32_t c) {
 			_dvi2bp = vf->scaledSize()/(1 << 20);
 			DVIState savedState = _dviState;  // save current cursor position
 			_dviState.x = _dviState.y = _dviState.w = _dviState.z = 0;
-			VectorInputStream<uint8_t> vis(*dvi);
-			istream &is = replaceStream(vis);
+			ivectorstream<vector<char>> vis(*dvi);
+			auto &is = replaceStream(vis);
 			try {
 				executeAll();  // execute DVI fragment
 			}
@@ -460,7 +463,7 @@ const Font* DVIReader::defineFont (uint32_t fontnum, const string &name, uint32_
 	Font *font = fm.getFont(fontnum);
 	if (!font && !name.empty()) {  // font not registered yet?
 		if (name[0] == '[') {       // LuaTeX native font reference?
-			size_t last = name.rfind(']');
+			auto last = name.rfind(']');
 			if (last != string::npos) {
 				string path = name.substr(1, last-1);
 				FontStyle style;
@@ -531,7 +534,7 @@ void DVIReader::defineVFFont (uint32_t fontnum, const string &path, const string
 /** This template method is called by the VFReader after reading a character definition from a VF file.
  *  @param[in] c character number
  *  @param[in] dvi DVI fragment describing the character */
-void DVIReader::defineVFChar (uint32_t c, vector<uint8_t> &&dvi) {
+void DVIReader::defineVFChar (uint32_t c, vector<char> &&dvi) {
 	FontManager::instance().assignVFChar(c, std::move(dvi));
 }
 
@@ -595,6 +598,20 @@ void DVIReader::cmdXFontDef (int) {
 }
 
 
+/** Returns the width of a string typed with a given font.
+ *  @param[in] glyphs glyphs of the string
+ *  @param[in] font assigned font
+ *  @return width in bp units */
+static double string_width (const vector<uint16_t> &glyphs, const Font *font) {
+	double width=0;
+	if (auto nfont = font_cast<const NativeFont*>(font)) {
+		for (auto glyph: glyphs)
+			width += nfont->hAdvance(Character(Character::INDEX, glyph));
+	}
+	return width;
+}
+
+
 /** XDV extension: prints an array of characters where each character
  *  can take independent x and y coordinates.
  *  parameters: w[4] n[2] (dx,dy)[(4+4)n] glyphs[2n] */
@@ -602,11 +619,14 @@ void DVIReader::cmdXGlyphArray (int) {
 	vector<double> dx, dy;
 	vector<uint16_t> glyphs;
 	double width = putGlyphArray(false, dx, dy, glyphs);
-	if (Font *font = FontManager::instance().getFont(_currFontNum))
-		dviXGlyphArray(dx, dy, glyphs, *font);
-	else
+	Font *font = FontManager::instance().getFont(_currFontNum);
+	if (!font)
 		throw DVIException("missing setfont prior to xglypharray");
-	moveRight(width, MoveMode::SETCHAR);
+	dviXGlyphArray(dx, dy, glyphs, *font);
+	double diff = abs(string_width(glyphs, font) - width);
+	// if the given width differs from the actual width of the string,
+	// we must force a position change to prevent misalignments
+	moveRight(width, diff < 0.2 ? MoveMode::SETCHAR : MoveMode::CHANGEPOS);
 }
 
 
@@ -617,11 +637,14 @@ void DVIReader::cmdXGlyphString (int) {
 	vector<double> dx, dy;
 	vector<uint16_t> glyphs;
 	double width = putGlyphArray(true, dx, dy, glyphs);
-	if (Font *font = FontManager::instance().getFont(_currFontNum))
-		dviXGlyphString(dx, glyphs, *font);
-	else
+	Font *font = FontManager::instance().getFont(_currFontNum);
+	if (!font)
 		throw DVIException("missing setfont prior to xglyphstring");
-	moveRight(width, MoveMode::SETCHAR);
+	dviXGlyphString(dx, glyphs, *font);
+	double diff = abs(string_width(glyphs, font) - width);
+	// if the given width differs from the actual width of the string,
+	// we must force a position change to prevent misalignments
+	moveRight(width, diff < 0.2 ? MoveMode::SETCHAR : MoveMode::CHANGEPOS);
 }
 
 
@@ -639,11 +662,14 @@ void DVIReader::cmdXTextAndGlyphs (int) {
 	vector<double> x, y;
 	vector<uint16_t> glyphs;
 	double width = putGlyphArray(false, x, y, glyphs);
-	if (Font *font = FontManager::instance().getFont(_currFontNum))
-		dviXTextAndGlyphs(x, y, chars, glyphs, *font);
-	else
+	Font *font = FontManager::instance().getFont(_currFontNum);
+	if (!font)
 		throw DVIException("missing setfont prior to xtextandglyphs");
-	moveRight(width, MoveMode::SETCHAR);
+	dviXTextAndGlyphs(x, y, chars, glyphs, *font);
+	double diff = abs(string_width(glyphs, font) - width);
+	// if the given width differs from the actual width of the string,
+	// we must force a position change to prevent misalignments
+	moveRight(width, diff < 0.2 ? MoveMode::SETCHAR : MoveMode::CHANGEPOS);
 }
 
 

@@ -1,9 +1,11 @@
-Disable GFGlyphTracerTest. Fails on i386 (see upstream #117).
+Description: Workaround for test failure on i386
+ Upstream will hopefully provide a real fix.
+Forwarded: https://github.com/mgieseki/dvisvgm/issues/117
+Author: Martin Gieseking  <martin.gieseking@uos.de>
+Last-Update: 2021-08-27
 ---
-Index: dvisvgm/tests/GFGlyphTracerTest.cpp
-===================================================================
---- dvisvgm.orig/tests/GFGlyphTracerTest.cpp	2021-08-27 00:14:12.339035067 +0200
-+++ dvisvgm/tests/GFGlyphTracerTest.cpp	2021-08-27 00:14:31.014932308 +0200
+--- dvisvgm-3.2.1+ds.orig/tests/GFGlyphTracerTest.cpp
++++ dvisvgm-3.2.1+ds/tests/GFGlyphTracerTest.cpp
 @@ -42,7 +42,7 @@
  
  

@@ -1,8 +1,8 @@
 _dvisvgm_ &ndash; A fast DVI to SVG converter
 =============================================
 [![C/C++ CI](https://github.com/mgieseki/dvisvgm/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/mgieseki/dvisvgm/actions/workflows/c-cpp.yml)
-[![Build Status](https://travis-ci.org/mgieseki/dvisvgm.svg?branch=master)](https://travis-ci.org/mgieseki/dvisvgm)
 [![Build Status](https://ci.appveyor.com/api/projects/status/0rbkw88js1on4g2u/branch/master?svg=true)](https://ci.appveyor.com/project/mgieseki/dvisvgm/branch/master)
+[![Copr Status](https://copr.fedorainfracloud.org/coprs/mgieseki/dvisvgm/package/dvisvgm/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/mgieseki/dvisvgm/package/dvisvgm)
 [![Code Status](https://scan.coverity.com/projects/1099/badge.svg)](https://scan.coverity.com/projects/1099)
 [![License](https://img.shields.io/:license-GPL%20v3+-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 [![Releases](https://img.shields.io/github/release/mgieseki/dvisvgm.svg)](https://github.com/mgieseki/dvisvgm/releases)
@@ -16,7 +16,7 @@ _dvisvgm_ is a utility for TeX/LaTeX users. It converts
 [PDF](https://en.wikipedia.org/wiki/PDF) files to the
 XML-based scalable vector graphics format [SVG](https://www.w3.org/TR/SVG).
 The latest releases support standard DVI files (version 2) as well as DVI output
-created by [pTeX](http://www.ascii.co.jp/pb/ptex) in vertical mode (version 3),
+created by [pTeX](https://ctan.org/pkg/ptex) in vertical mode (version 3),
 and [XeTeX](http://scripts.sil.org/xetex) (versions 5 to 7, also known as XDV).
 
 To get an impression of the conversion results, have a look at the
@@ -24,7 +24,7 @@ To get an impression of the conversion results, have a look at the
 
 Short overview of the main features:
 
-* Complete font support including [virtual fonts](http://www.tex.ac.uk/cgi-bin/texfaq2html?label=virtualfonts), evaluation of [font encodings](http://www.tex.ac.uk/cgi-bin/texfaq2html?label=whatenc), CMap files, sub-font definitions and font maps.
+* Complete font support including [virtual fonts](https://texfaq.org/FAQ-virtualfonts), evaluation of [font encodings](https://texfaq.org/FAQ-whatenc), CMap files, sub-font definitions and font maps.
 * Glyph outlines of all required fonts are embedded into the generated SVG files.
 * The font data can be embedded in SVG, TrueType, WOFF, or WOFF2 format.
 * Glyph outlines of fonts that are not available in a vector format are generated on-the-fly by vectorizing [METAFONT](https://en.wikipedia.org/wiki/Metafont)'s bitmap output.
@@ -32,14 +32,14 @@ Short overview of the main features:
 * Computes tight bounding boxes for the generated graphics, but supports common paper formats and arbitrary user-defined sizes as well.
 * Option `--eps` allows to convert [EPS](https://en.wikipedia.org/wiki/Encapsulated_PostScript) files to SVG.
 * Option `--pdf` allows to convert [PDF](https://en.wikipedia.org/wiki/PDF) documents to SVG.
-* [Intersections of clipping paths](https://dvisvgm.de/Clipping) can be computed directly instead of delegating this task to the SVG renderer. This increases the compatibility of the generated SVG files.
+* [Intersections of clipping paths](https://dvisvgm.de/Clipping) can be computed directly instead of delegating this task to the SVG renderer which increases the compatibility of the generated SVG files.
 * Approximates PostScript [color gradient fills](https://dvisvgm.de/Gradients) not directly supported by SVG 1.1.
 * The generated SVG structure and data can be improved with the built-in [SVG optimizer](https://dvisvgm.de/Manpage/#opt-optimize).
 * Optionally creates compressed [SVGZ](https://en.wikipedia.org/wiki/Scalable_Vector_Graphics#Compression) files.
 * Provides options for applying page transformations, like translation, rotation, scaling, and skewing.
-* Evaluates several [specials](http://www.tex.ac.uk/cgi-bin/texfaq2html?label=specials) including color, emTeX, tpic, hyperref/HyperTeX, papersize, PDF hyperlink and mapfile, as well as PostScript specials.
-* The converter was successfully tested on various Linux ([TeX Live](https://www.tug.org/texlive)) and Windows ([MiKTeX](https://www.miktex.org), [W32TeX](http://w32tex.org)) systems.
-* _dvisvgm_ has been added to [TeX Live](https://www.tug.org/texlive), [W32TeX](http://w32tex.org), [MiKTeX](https://www.miktex.org), and [MacPorts](https://www.macports.org). It is therefore available for a wide range of operating systems.
+* Evaluates several [specials](https://texfaq.org/FAQ-specials) including color, emTeX, tpic, hyperref/HyperTeX, papersize, PDF hyperlink and mapfile, as well as PostScript specials.
+* The converter was successfully tested on various Linux ([TeX Live](https://www.tug.org/texlive)) and Windows ([MiKTeX](https://www.miktex.org), TeX Live) systems.
+* _dvisvgm_ has been added to [TeX Live](https://www.tug.org/texlive), [MiKTeX](https://www.miktex.org), and [MacPorts](https://www.macports.org). It is therefore available for a wide range of operating systems.
 
 
 Usage
@@ -57,12 +57,6 @@ _dvisvgm_ relies on the following free libraries:
   To compute the intersection of two curved paths, _dvisvgm_ flattens the paths to
   polygons, intersects them using a slightly modified version of Clipper, and reconstructs
   the curves afterwards. A slightly modified version of Clipper is bundled with the sources.
-
-* [FontForge library](https://fontforge.github.io)  
-  _dvisvgm_ can be built with optional WOFF support that allows to embed the font data
-  in WOFF or TrueType format rather than as SVG. The FontForge library provides the required
-  functions to create font files in these formats. A reduced version of the library is bundled
-  with the _dvisvgm_ sources.
 
 * [FreeType 2](https://www.freetype.org)  
   This library is used to extract the glyph outlines from vector fonts (PFB, OTF, TTF).
@@ -82,20 +76,15 @@ _dvisvgm_ relies on the following free libraries:
   files in the large `texmf` tree. Please ensure that you use the kpathsea version
   coming with or matching your TeX system.
 
-* [OpenSSL crypto library](https://www.openssl.org)
-  _dvisvgm_ comes with a bundled implementation of the MD5 hash algorithm which can optionally
-  be replaced with the corresponding function of the OpenSSL crypto library. If the
-  configuration script finds the OpenSSL development files on the build system, it links
-  against _libcrypto_ instead of the bundled MD5 module.
-
 * [potracelib](http://potrace.sourceforge.net)  
   Peter Selinger's bitmap tracing library is utilized to vectorize Metafont's
   bitmap output. It's also bundled with the _dvisvgm_ sources.
 
 * [ttfautohint](https://www.freetype.org/ttfautohint)  
-  _dvisvgm_ can optionally be built with ttfautohint support to replace the autohinting
-  functionality of FontForge. Since it's still an experimental feature, ttfautohint support
-  is disabled by default. To enable it, run `configure` with option `--with-ttfautohint`.
+  _dvisvgm_ can optionally be built with ttfautohint support to allow for autohinting the
+  generated TrueType, WOFF, and WOFF2 fonts. Since this is still an experimental feature,
+  ttfautohint support is disabled by default. To enable it, run `configure` with option
+  `--with-ttfautohint`.
 
 * [woff2](https://github.com/google/woff2) and [brotli](https://github.com/google/brotli)  
   These Google libraries are bundled with the _dvisvgm_ sources. They are used
@@ -122,7 +111,7 @@ adds the proper compiler options if necessary.
 Quick installation info:
 
 * ensure that the development packages of all libraries, listed above, are installed
-* type `./autogen.sh` if `configure` is not present in the _dvisvgm_ root folder
+* type `autoreconf -fi` if `configure` is not present in the _dvisvgm_ root folder
 * either type `./configure` if you don't want to use the bundled libraries _brotli_, _potrace_, _woff2_, and _xxHash_ but link
 against the corresponding system libraries,
 * or type `./configure --enable-bundled-libs` in order to build and statically link the bundled libraries.
@@ -162,7 +151,7 @@ preferably use the [bug tracker at GitHub](https://github.com/mgieseki/dvisvgm/i
 Copyright
 ---------
 
-Copyright &copy; 2005&ndash;2021 [Martin Gieseking](mailto:martin.gieseking@uos.de)
+Copyright &copy; 2005&ndash;2024 [Martin Gieseking](mailto:martin.gieseking@uos.de)
 
 This program is free software; you can redistribute it and/or modify it under the terms
 of the GNU General Public License as published by the Free Software Foundation; either

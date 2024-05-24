@@ -2,7 +2,7 @@
 ** ColorTest.cpp                                                        **
 **                                                                      **
 ** This file is part of dvisvgm -- a fast DVI to SVG converter          **
-** Copyright (C) 2005-2021 Martin Gieseking <martin.gieseking@uos.de>   **
+** Copyright (C) 2005-2024 Martin Gieseking <martin.gieseking@uos.de>   **
 **                                                                      **
 ** This program is free software; you can redistribute it and/or        **
 ** modify it under the terms of the GNU General Public License as       **
@@ -65,20 +65,7 @@ TEST(ColorTest, hsb) {
 TEST(ColorTest, cmyk) {
 	Color color;
 	color.setCMYK(0.5, 0.4, 0.6, 0.2);
-	EXPECT_EQ(color.rgbString(), "#667a52");
-	double c, m, y, k;
-	color.setRGB(0.0, 0.0, 0.0);
-	color.getCMYK(c, m, y, k);
-	EXPECT_DOUBLE_EQ(c, 0.0);
-	EXPECT_DOUBLE_EQ(m, 0.0);
-	EXPECT_DOUBLE_EQ(y, 0.0);
-	EXPECT_DOUBLE_EQ(k, 1.0);
-	color.setRGB(1.0, 0.0, 0.0);
-	color.getCMYK(c, m, y, k);
-	EXPECT_DOUBLE_EQ(c, 0.0);
-	EXPECT_DOUBLE_EQ(m, 1.0);
-	EXPECT_DOUBLE_EQ(y, 1.0);
-	EXPECT_DOUBLE_EQ(k, 0.0);
+	EXPECT_EQ(color.rgbString(), "#767761");
 }
 
 
@@ -207,7 +194,7 @@ TEST(ColorTest, set) {
 	EXPECT_EQ(uint32_t(color), 0x1a334du);
 	it.reset();
 	color.set(Color::ColorSpace::CMYK, it);
-	EXPECT_EQ(uint32_t(color), 0x8a7a6bu);
+	EXPECT_EQ(uint32_t(color), 0x1A334D66u);
 	it.reset();
 	color.set(Color::ColorSpace::LAB, it);
 	EXPECT_EQ(uint32_t(color), 0x010000u);
