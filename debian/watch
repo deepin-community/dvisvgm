@@ -15,6 +15,7 @@ version=4
 # http://sf.net/dvisvgm/ dvisvgm-(.*)\.tar\.gz debian uupdate
 
 # GitHub hosted projects
-opts="filenamemangle=s%(?:.*?)?v?(\d[\d.]*)\.tar\.gz%dvisvgm-$1.tar.gz%" \
+opts=repack,repacksuffix=+ds,compression=gz,dversionmangle=s/\+ds//,\
+   filenamemangle=s%(?:.*?)?v?(\d[\d.]*)\.tar\.gz%dvisvgm-$1.tar.gz% \
    https://github.com/mgieseki/dvisvgm/tags \
    (?:.*?/)?v?(\d[\d.]*)\.tar\.gz debian uupdate

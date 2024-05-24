@@ -1,2 +1,3 @@
-dvisvgm source: debian-watch-does-not-check-gpg-signature
-
+dvisvgm source: debian-watch-does-not-check-openpgp-signature
+dvisvgm source: very-long-line-length-in-source-file
+dvisvgm source: prefer-uscan-symlink

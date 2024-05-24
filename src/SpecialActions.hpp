@@ -2,7 +2,7 @@
 ** SpecialActions.hpp                                                   **
 **                                                                      **
 ** This file is part of dvisvgm -- a fast DVI to SVG converter          **
-** Copyright (C) 2005-2021 Martin Gieseking <martin.gieseking@uos.de>   **
+** Copyright (C) 2005-2024 Martin Gieseking <martin.gieseking@uos.de>   **
 **                                                                      **
 ** This program is free software; you can redistribute it and/or        **
 ** modify it under the terms of the GNU General Public License as       **
@@ -27,11 +27,16 @@
 #include "Color.hpp"
 #include "FilePath.hpp"
 #include "Matrix.hpp"
+#include "MessageException.hpp"
 #include "Opacity.hpp"
 #include "SVGTree.hpp"
 
 class XMLElement;
 class XMLNode;
+
+struct SpecialException : public MessageException {
+	explicit SpecialException (const std::string &msg) : MessageException(msg) {}
+};
 
 class SpecialActions {
 	public:
@@ -50,7 +55,7 @@ class SpecialActions {
 		virtual void setOpacity (const Opacity &opacity) =0;
 		virtual const Opacity& getOpacity () const =0;
 		virtual const SVGTree& svgTree () const =0;
-		SVGTree& svgTree () {return const_cast<SVGTree&>(const_cast<const SpecialActions*>(this)->svgTree());}
+		virtual SVGTree& svgTree () {return const_cast<SVGTree&>(const_cast<const SpecialActions*>(this)->svgTree());}
 		virtual BoundingBox& bbox () =0;
 		virtual BoundingBox& bbox (const std::string &name, bool reset=false) =0;
 		virtual void embed (const BoundingBox &bbox) =0;
@@ -63,6 +68,7 @@ class SpecialActions {
 		virtual void lockOutput () {}
 		virtual void unlockOutput () {}
 		virtual bool outputLocked () const {return false;}
+		std::string expandText (const std::string &text);
 
 		static double PROGRESSBAR_DELAY; ///< progress bar doesn't appear before this time has elapsed (in sec)
 };
