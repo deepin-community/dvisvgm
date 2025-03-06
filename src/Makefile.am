@@ -1,11 +1,11 @@
 ## This file is part of dvisvgm
-## Copyright (C) 2005-2021 Martin Gieseking <martin.gieseking@uos.de>
+## Copyright (C) 2005-2025 Martin Gieseking <martin.gieseking@uos.de>
 ##
 ## Process this file with automake.
 
 bin_PROGRAMS     = dvisvgm
 noinst_LTLIBRARIES = libdvisvgm.la
-SUBDIRS = optimizer
+SUBDIRS = fonts optimizer ttf
 
 dvisvgm_SOURCES = \
 	CommandLine.hpp \
@@ -16,26 +16,36 @@ include ../libs/defs.am
 dvisvgm_LDADD = \
 	$(noinst_LTLIBRARIES) \
 	../libs/clipper/libclipper.a \
-	$(FREETYPE_LIBS) \
-	$(FONTFORGE_LIBS) \
+	../libs/md5/libmd5.a \
 	$(POTRACE_LIBS) \
-	$(XXHASH_LIBS) \
-	$(ZLIB_LIBS)
+	$(XXHASH_LIBS)
 
 if ENABLE_WOFF
+SUBDIRS += ttf
+
 dvisvgm_LDADD += \
-	../libs/ff-woff/libfontforge.a \
 	$(WOFF2_LIBS) \
 	$(BROTLI_LIBS)
-endif
+endif ENABLE_WOFF
 
-if USE_BUNDLED_MD5
-dvisvgm_LDADD += ../libs/md5/libmd5.a
+if TEXLIVE_BUILD
+dvisvgm_LDADD += \
+	$(KPATHSEA_LIBS) \
+	$(FREETYPE2_LIBS) \
+	$(ZLIB_LIBS) \
+	$(LIBGS_LIBS)
 else
-dvisvgm_LDADD += $(LIBCRYPTO_LIBS)
-endif
+dvisvgm_LDADD += \
+	$(FREETYPE_LIBS) \
+	$(ZLIB_LIBS)
+endif !TEXLIVE_BUILD
 
 dvisvgm_DEPENDENCIES = $(noinst_LTLIBRARIES)
+
+if TEXLIVE_BUILD
+dvisvgm_DEPENDENCIES += $(KPATHSEA_DEPEND) $(ZLIB_DEPEND) $(FREETYPE2_DEPEND)
+dvisvgm_DEPENDENCIES += $(POTRACE_DEPEND)
+endif
 
 libdvisvgm_la_SOURCES = \
 	AGLTable.hpp \
@@ -87,6 +97,7 @@ libdvisvgm_la_SOURCES = \
 	Glyph.hpp \
 	GlyphTracerMessages.hpp \
 	GraphicsPath.hpp \
+	GraphicsPathParser.hpp \
 	HashFunction.hpp             HashFunction.cpp \
 	HtmlSpecialHandler.hpp       HtmlSpecialHandler.cpp \
 	HyperlinkManager.hpp         HyperlinkManager.cpp \
@@ -104,28 +115,30 @@ libdvisvgm_la_SOURCES = \
 	MetafontWrapper.hpp          MetafontWrapper.cpp \
 	NoPsSpecialHandler.hpp       NoPsSpecialHandler.cpp \
 	NumericRanges.hpp \
+	OFM.hpp                      OFM.cpp \
 	Opacity.hpp                  Opacity.cpp \
 	PageRanges.hpp               PageRanges.cpp \
 	PageSize.hpp                 PageSize.cpp \
 	Pair.hpp \
 	PapersizeSpecialHandler.hpp  PapersizeSpecialHandler.cpp \
 	PathClipper.hpp              PathClipper.cpp \
+	PDFHandler.hpp               PDFHandler.cpp \
 	PDFParser.hpp                PDFParser.cpp \
 	PdfSpecialHandler.hpp        PdfSpecialHandler.cpp \
-	PDFToSVG.hpp \
+	PDFToSVG.hpp                 PDFToSVG.cpp \
 	PreScanDVIReader.hpp         PreScanDVIReader.cpp \
 	Process.hpp                  Process.cpp \
 	psdefs.cpp \
-	PSFilter.hpp \
 	PSInterpreter.hpp            PSInterpreter.cpp \
 	PSPattern.hpp                PSPattern.cpp \
-	PSPreviewFilter.hpp          PSPreviewFilter.cpp \
+	PSPreviewHandler.hpp         PSPreviewHandler.cpp \
 	PsSpecialHandler.hpp         PsSpecialHandler.cpp \
+	PsSpecialHandlerProxy.hpp    PsSpecialHandlerProxy.cpp \
 	RangeMap.hpp                 RangeMap.cpp \
 	ShadingPatch.hpp             ShadingPatch.cpp \
 	SignalHandler.hpp            SignalHandler.cpp \
 	SourceInput.hpp              SourceInput.cpp \
-	SpecialActions.hpp \
+	SpecialActions.hpp           SpecialActions.cpp \
 	SpecialHandler.hpp \
 	SpecialManager.hpp           SpecialManager.cpp \
 	StreamReader.hpp             StreamReader.cpp \
@@ -146,70 +159,78 @@ libdvisvgm_la_SOURCES = \
 	ToUnicodeMap.hpp             ToUnicodeMap.cpp \
 	TpicSpecialHandler.hpp       TpicSpecialHandler.cpp \
 	TriangularPatch.hpp          TriangularPatch.cpp \
-	TrueTypeFont.hpp             TrueTypeFont.cpp \
-	TTFAutohint.hpp              TTFAutohint.cpp \
 	Unicode.hpp                  Unicode.cpp \
 	utility.hpp                  utility.cpp \
 	VectorIterator.hpp \
-	VectorStream.hpp \
 	VFActions.hpp \
 	VFReader.hpp                 VFReader.cpp \
 	windows.hpp \
 	XMLDocument.hpp              XMLDocument.cpp \
 	XMLNode.hpp                  XMLNode.cpp \
+	XMLParser.hpp                XMLParser.cpp \
 	XMLString.hpp                XMLString.cpp \
 	XXHashFunction.hpp \
 	ZLibOutputStream.hpp
 
-if ENABLE_WOFF
-libdvisvgm_la_SOURCES += ffwrapper.c ffwrapper.h
-endif
+libdvisvgm_la_LIBADD = fonts/libbase14fonts.la optimizer/liboptimizer.la
 
-libdvisvgm_la_LIBADD = optimizer/liboptimizer.la
+if ENABLE_WOFF
+libdvisvgm_la_LIBADD += ttf/libttf.la
+endif
 
 EXTRA_DIST = options.xml options.dtd iapi.h ierrors.h MiKTeXCom.hpp MiKTeXCom.cpp
 
-AM_CFLAGS = -Wall \
+AM_CFLAGS = $(WARNING_CFLAGS) \
 	$(ZLIB_CFLAGS) \
 	$(CODE_COVERAGE_CFLAGS)
 
-AM_CXXFLAGS = -Wall -Wnon-virtual-dtor \
+AM_CXXFLAGS = $(WARNING_CXXFLAGS) \
+	-I$(dvisvgm_srcdir)/libs/boost \
 	-I$(dvisvgm_srcdir)/libs/clipper \
-	-I$(dvisvgm_srcdir)/libs/variant/include \
-	$(KPSE_CFLAGS) \
-	$(FREETYPE_CFLAGS) \
-	$(ZLIB_CFLAGS) \
-	$(CODE_COVERAGE_CFLAGS)
+	-I$(dvisvgm_srcdir)/libs/variant/include
 
 AM_CXXFLAGS += \
 	$(POTRACE_CFLAGS) \
 	$(XXHASH_CFLAGS)
+
+if TEXLIVE_BUILD
+AM_CXXFLAGS += \
+	$(KPATHSEA_INCLUDES) \
+	$(POTRACE_INCLUDES) \
+	$(FREETYPE2_INCLUDES) \
+	$(ZLIB_INCLUDES) \
+	$(CODE_COVERAGE_CFLAGS)
+if WIN32
+AM_CXXFLAGS += -DTEXLIVEWIN32
+endif WIN32
+else
+AM_CXXFLAGS += \
+	$(KPSE_CFLAGS) \
+	$(FREETYPE_CFLAGS) \
+	$(ZLIB_CFLAGS) \
+	$(CODE_COVERAGE_CFLAGS)
+endif !TEXLIVE_BUILD
 
 AM_LDFLAGS = \
 	$(KPSE_LIBS) \
 	$(CODE_COVERAGE_LDFLAGS)
 
 if ENABLE_WOFF
-AM_CFLAGS +=  \
-	-I$(dvisvgm_srcdir)/libs/ff-woff/fontforge \
-	-I$(dvisvgm_srcdir)/libs/ff-woff/inc
-
 AM_CXXFLAGS += $(TTFAUTOHINT_CFLAGS)
 
 AM_CXXFLAGS +=  \
 	$(BROTLI_CFLAGS) \
 	$(WOFF2_CFLAGS)
 
-if USE_BUNDLED_MD5
-AM_CXXFLAGS += -I$(dvisvgm_srcdir)/libs/md5
-else
-AM_CXXFLAGS += $(LIBCRYPTO_CFLAGS)
-endif
-
+# TL: do not try to rebuild these source files.
+if !TEXLIVE_BUILD
 AM_LDFLAGS += $(TTFAUTOHINT_LIBS)
-endif
+endif !TEXLIVE_BUILD
+endif ENABLE_WOFF
 
+AM_CXXFLAGS += -I$(dvisvgm_srcdir)/libs/md5
 
+if !TEXLIVE_BUILD
 # the command-line parser class is generated from options.xml by opt2cpp
 $(srcdir)/CommandLine.hpp: options.xml
 	rm -f $@
@@ -222,7 +243,17 @@ $(srcdir)/psdefs.cpp: psdefs.ps
 	fi
 
 psdefs.ps: ;
-
-@CODE_COVERAGE_RULES@
+endif !TEXLIVE_BUILD
 
 CLEANFILES = *.gcda *.gcno
+
+if TEXLIVE_BUILD
+# Rebuild libkpathsea:
+@KPATHSEA_RULE@
+# Rebuild libfreetype:
+@FREETYPE2_RULE@
+# Rebuild libz:
+@ZLIB_RULE@
+# Rebuild potrace:
+@POTRACE_RULE@
+endif TEXLIVE_BUILD

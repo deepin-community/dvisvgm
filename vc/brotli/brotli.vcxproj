@@ -27,28 +27,28 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CLRSupport>false</CLRSupport>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CLRSupport>false</CLRSupport>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CLRSupport>false</CLRSupport>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CLRSupport>false</CLRSupport>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -127,6 +127,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalIncludeDirectories>..\..\libs\brotli\common;..\..\libs\brotli\include</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
@@ -144,6 +145,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalIncludeDirectories>..\..\libs\brotli\common;..\..\libs\brotli\include</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
@@ -165,6 +167,7 @@
     <ClCompile Include="..\..\libs\brotli\enc\brotli_bit_stream.c" />
     <ClCompile Include="..\..\libs\brotli\enc\cluster.c" />
     <ClCompile Include="..\..\libs\brotli\enc\command.c" />
+    <ClCompile Include="..\..\libs\brotli\enc\compound_dictionary.c" />
     <ClCompile Include="..\..\libs\brotli\enc\compress_fragment.c" />
     <ClCompile Include="..\..\libs\brotli\enc\compress_fragment_two_pass.c" />
     <ClCompile Include="..\..\libs\brotli\enc\dictionary_hash.c" />
@@ -184,6 +187,7 @@
     <ClInclude Include="..\..\libs\brotli\common\context.h" />
     <ClInclude Include="..\..\libs\brotli\common\dictionary.h" />
     <ClInclude Include="..\..\libs\brotli\common\platform.h" />
+    <ClInclude Include="..\..\libs\brotli\common\shared_dictionary_internal.h" />
     <ClInclude Include="..\..\libs\brotli\common\transform.h" />
     <ClInclude Include="..\..\libs\brotli\common\version.h" />
     <ClInclude Include="..\..\libs\brotli\enc\backward_references.h" />
@@ -198,6 +202,7 @@
     <ClInclude Include="..\..\libs\brotli\enc\cluster.h" />
     <ClInclude Include="..\..\libs\brotli\enc\cluster_inc.h" />
     <ClInclude Include="..\..\libs\brotli\enc\command.h" />
+    <ClInclude Include="..\..\libs\brotli\enc\compound_dictionary.h" />
     <ClInclude Include="..\..\libs\brotli\enc\compress_fragment.h" />
     <ClInclude Include="..\..\libs\brotli\enc\compress_fragment_two_pass.h" />
     <ClInclude Include="..\..\libs\brotli\enc\dictionary_hash.h" />
@@ -222,6 +227,7 @@
     <ClInclude Include="..\..\libs\brotli\enc\prefix.h" />
     <ClInclude Include="..\..\libs\brotli\enc\quality.h" />
     <ClInclude Include="..\..\libs\brotli\enc\ringbuffer.h" />
+    <ClInclude Include="..\..\libs\brotli\enc\state.h" />
     <ClInclude Include="..\..\libs\brotli\enc\static_dict.h" />
     <ClInclude Include="..\..\libs\brotli\enc\static_dict_lut.h" />
     <ClInclude Include="..\..\libs\brotli\enc\utf8_util.h" />
@@ -229,6 +235,7 @@
     <ClInclude Include="..\..\libs\brotli\include\brotli\decode.h" />
     <ClInclude Include="..\..\libs\brotli\include\brotli\encode.h" />
     <ClInclude Include="..\..\libs\brotli\include\brotli\port.h" />
+    <ClInclude Include="..\..\libs\brotli\include\brotli\shared_dictionary.h" />
     <ClInclude Include="..\..\libs\brotli\include\brotli\types.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

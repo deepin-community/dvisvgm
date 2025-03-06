@@ -2,4 +2,8 @@
 
 set -e
 
-make check
+dh_update_autotools_config
+dh_autoreconf
+dh_auto_configure
+
+make -j4 check

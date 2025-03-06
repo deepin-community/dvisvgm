@@ -2,7 +2,7 @@
 ** dvisvgm.cpp                                                          **
 **                                                                      **
 ** This file is part of dvisvgm -- a fast DVI to SVG converter          **
-** Copyright (C) 2005-2021 Martin Gieseking <martin.gieseking@uos.de>   **
+** Copyright (C) 2005-2025 Martin Gieseking <martin.gieseking@uos.de>   **
 **                                                                      **
 ** This program is free software; you can redistribute it and/or        **
 ** modify it under the terms of the GNU General Public License as       **
@@ -40,6 +40,7 @@
 #include "HyperlinkManager.hpp"
 #include "Message.hpp"
 #include "PageSize.hpp"
+#include "PDFHandler.hpp"
 #include "PDFToSVG.hpp"
 #include "PSInterpreter.hpp"
 #include "PsSpecialHandler.hpp"
@@ -48,6 +49,8 @@
 #include "optimizer/SVGOptimizer.hpp"
 #include "SVGOutput.hpp"
 #include "System.hpp"
+#include "ttf/TTFWriter.hpp"
+#include "XMLParser.hpp"
 #include "XXHashFunction.hpp"
 #include "utility.hpp"
 #include "version.hpp"
@@ -55,8 +58,7 @@
 #ifndef DISABLE_WOFF
 #include <brotli/encode.h>
 //#include <woff2/version.h>
-#include "ffwrapper.h"
-#include "TTFAutohint.hpp"
+#include "ttf/TTFAutohint.hpp"
 #endif
 
 using namespace std;
@@ -65,7 +67,7 @@ using namespace std;
 
 static string remove_path (string fname) {
 	fname = FileSystem::ensureForwardSlashes(fname);
-	size_t slashpos = fname.rfind('/');
+	auto slashpos = fname.rfind('/');
 	if (slashpos == string::npos)
 		return fname;
 	return fname.substr(slashpos+1);
@@ -74,7 +76,7 @@ static string remove_path (string fname) {
 
 static string ensure_suffix (string fname, const string &suffix) {
 	if (!fname.empty()) {
-		size_t dotpos = remove_path(fname).rfind('.');
+		auto dotpos = remove_path(fname).rfind('.');
 		if (dotpos == string::npos)
 			fname += "." + suffix;
 	}
@@ -155,7 +157,7 @@ static bool set_temp_dir (const CommandLine &args) {
 		if (!args.tmpdirOpt.value().empty())
 			FileSystem::TMPDIR = args.tmpdirOpt.value();
 		else {
-			cout << "temporary folder: " << FileSystem::tmpdir() << '\n';
+			cout << "temporary folder: " << FileSystem::ensureSystemSlashes(FileSystem::tmpdir(true)) << '\n';
 			return false;
 		}
 	}
@@ -254,9 +256,9 @@ class VersionInfo {
 
 static void print_version (bool extended) {
 	string versionstr = string(PROGRAM_NAME)+" "+PROGRAM_VERSION;
-#ifdef TARGET_SYSTEM
-	if (extended && strlen(TARGET_SYSTEM) > 0)
-		versionstr += " (" TARGET_SYSTEM ")";
+#ifdef HOST_SYSTEM
+	if (extended && strlen(HOST_SYSTEM) > 0)
+		versionstr += " (" HOST_SYSTEM ")";
 #endif
 	cout << versionstr << '\n';
 	if (extended) {
@@ -268,11 +270,11 @@ static void print_version (bool extended) {
 		versionInfo.add("xxhash", XXH64HashFunction::version(), 3, 100);
 		versionInfo.add("zlib", zlibVersion());
 		versionInfo.add("Ghostscript", Ghostscript().revisionstr(), true);
+		versionInfo.add("mutool", PDFHandler::mutoolVersion(), true);
 #ifndef DISABLE_WOFF
 		versionInfo.add("brotli", BrotliEncoderVersion(), 3, 0x1000);
 //		versionInfo.add("woff2", woff2::version, 3, 0x100);
-		versionInfo.add("fontforge", ff_version());
-		versionInfo.add("ttfautohint", TTFAutohint().version(), true);
+		versionInfo.add("ttfautohint", ttf::TTFAutohint().version(), true);
 #endif
 #ifdef MIKTEX
 		versionInfo.add("MiKTeX", FileFinder::instance().version());
@@ -291,7 +293,7 @@ static void init_fontmap (const CommandLine &cmdline) {
 	bool additional = !mapseq.empty() && strchr("+-=", mapseq[0]);
 	if (mapseq.empty() || additional) {
 		bool found = false;
-		for (string mapfile : {"ps2pk", "pdftex", "dvipdfm", "psfonts"}) {
+		for (string mapfile : {"dvisvgm", "ps2pk", "pdftex", "dvipdfm", "psfonts"}) {
 			if ((found = FontMap::instance().read(mapfile+".map")))
 				break;
 		}
@@ -299,7 +301,7 @@ static void init_fontmap (const CommandLine &cmdline) {
 			Message::wstream(true) << "none of the default map files could be found\n";
 	}
 	if (!mapseq.empty())
-		FontMap::instance().read(mapseq);
+		FontMap::instance().read(mapseq, true);
 }
 
 
@@ -307,11 +309,11 @@ static void init_fontmap (const CommandLine &cmdline) {
  *  options affecting the SVG output. */
 static string svg_options_hash (const CommandLine &cmdline) {
 	// options affecting the SVG output
-	vector<const CL::Option*> svg_options = {
+	const CL::Option* svg_options[] = {
 		&cmdline.bboxOpt,	&cmdline.clipjoinOpt, &cmdline.colornamesOpt, &cmdline.commentsOpt,
-		&cmdline.exactBboxOpt, &cmdline.fontFormatOpt, &cmdline.fontmapOpt, &cmdline.gradOverlapOpt,
-		&cmdline.gradSegmentsOpt, &cmdline.gradSimplifyOpt, &cmdline.linkmarkOpt, &cmdline.magOpt,
-		&cmdline.noFontsOpt, &cmdline.noMergeOpt,	&cmdline.noSpecialsOpt, &cmdline.noStylesOpt,
+		&cmdline.currentcolorOpt, &cmdline.exactBboxOpt, &cmdline.fontFormatOpt, &cmdline.fontmapOpt,
+		&cmdline.gradOverlapOpt, &cmdline.gradSegmentsOpt, &cmdline.gradSimplifyOpt, &cmdline.linkmarkOpt,
+		&cmdline.magOpt, &cmdline.noFontsOpt, &cmdline.noMergeOpt, &cmdline.noSpecialsOpt, &cmdline.noStylesOpt,
 		&cmdline.optimizeOpt, &cmdline.precisionOpt, &cmdline.relativeOpt, &cmdline.zoomOpt
 	};
 	string idString = get_transformation_string(cmdline);
@@ -343,6 +345,13 @@ static void set_variables (const CommandLine &cmdline) {
 		SpecialActions::PROGRESSBAR_DELAY = cmdline.progressOpt.value();
 	}
 	Color::SUPPRESS_COLOR_NAMES = !cmdline.colornamesOpt.given();
+	if ((SVGElement::USE_CURRENTCOLOR = cmdline.currentcolorOpt.given())) {
+		Color color;
+		if (color.setRGBHexString(cmdline.currentcolorOpt.value()))
+			SVGElement::CURRENTCOLOR = color;
+		else
+			throw CL::CommandLineException("invalid color string '"+cmdline.currentcolorOpt.value()+"'");
+	}
 	SVGTree::CREATE_CSS = !cmdline.noStylesOpt.given();
 	SVGTree::USE_FONTS = !cmdline.noFontsOpt.given();
 	if (!SVGTree::setFontFormat(cmdline.fontFormatOpt.value())) {
@@ -370,6 +379,10 @@ static void set_variables (const CommandLine &cmdline) {
 	PsSpecialHandler::SHADING_SEGMENT_SIZE = max(1, cmdline.gradSegmentsOpt.value());
 	PsSpecialHandler::SHADING_SIMPLIFY_DELTA = cmdline.gradSimplifyOpt.value();
 	PsSpecialHandler::BITMAP_FORMAT = util::tolower(cmdline.bitmapFormatOpt.value());
+#ifdef TTFDEBUG
+	ttf::TTFWriter::CREATE_PS_GLYPH_OUTLINES = cmdline.debugGlyphsOpt.given();
+#endif
+	SVGTree::EMBED_BITMAP_DATA = cmdline.embedBitmapsOpt.given();
 	if (!PSInterpreter::imageDeviceKnown(PsSpecialHandler::BITMAP_FORMAT)) {
 		ostringstream oss;
 		oss << "unknown image format '" << PsSpecialHandler::BITMAP_FORMAT << "'\nknown formats:\n";
@@ -402,6 +415,48 @@ static void timer_message (double start_time, const pair<int,int> *pageinfo) {
 			Message::mstream(false, Message::MC_PAGE_NUMBER) << 's';
 	}
 	Message::mstream(false, Message::MC_PAGE_NUMBER) << " converted in " << (System::time()-start_time) << " seconds\n";
+}
+
+
+static void convert_file (size_t fnameIndex, const CommandLine &cmdline) {
+	const char *suffix = cmdline.epsOpt.given() ? "eps" : cmdline.pdfOpt.given() ? "pdf" : "dvi";
+	string inputfile = ensure_suffix(cmdline.filenames()[fnameIndex], suffix);
+	SourceInput srcin(inputfile);
+	if (!srcin.getInputStream(true))
+		throw MessageException("can't open file '" + srcin.getMessageFileName() + "' for reading");
+
+	double start_time = System::time();
+	set_variables(cmdline);
+	SVGOutput out(cmdline.stdoutOpt.given() ? "" : srcin.getFileName(),
+					  cmdline.outputOpt.value(),
+					  cmdline.zipOpt.given() ? cmdline.zipOpt.value() : 0);
+	out.setFileNumbers(fnameIndex+1, cmdline.filenames().size());
+	pair<int,int> pageinfo;
+	if (cmdline.epsOpt.given() || cmdline.pdfOpt.given()) {
+		auto img2svg = unique_ptr<ImageToSVG>(
+				cmdline.epsOpt.given()
+				? static_cast<ImageToSVG*>(new EPSToSVG(srcin.getFilePath(), out))
+				: static_cast<ImageToSVG*>(new PDFToSVG(srcin.getFilePath(), out)));
+		img2svg->setPageTransformation(get_transformation_string(cmdline));
+		img2svg->setUserMessage(cmdline.messageOpt.value());
+		img2svg->convert(cmdline.pageOpt.value(), &pageinfo);
+		timer_message(start_time, img2svg->isSinglePageFormat() ? nullptr : &pageinfo);
+	}
+	else {
+		init_fontmap(cmdline);
+		DVIToSVG dvi2svg(srcin.getInputStream(), out);
+		if (!list_page_hashes(cmdline, dvi2svg)) {
+			const char *ignore_specials = nullptr;
+			if (cmdline.noSpecialsOpt.given())
+				ignore_specials = cmdline.noSpecialsOpt.value().empty() ? "*" : cmdline.noSpecialsOpt.value().c_str();
+			dvi2svg.setProcessSpecials(ignore_specials, true);
+			dvi2svg.setPageTransformation(get_transformation_string(cmdline));
+			dvi2svg.setPageSize(cmdline.bboxOpt.value());
+			dvi2svg.setUserMessage(cmdline.messageOpt.value());
+			dvi2svg.convert(cmdline.pageOpt.value(), &pageinfo);
+			timer_message(start_time, &pageinfo);
+		}
+	}
 }
 
 
@@ -442,42 +497,9 @@ int main (int argc, char *argv[]) {
 			throw MessageException("no input file given");
 
 		SignalHandler::instance().start();
-		string inputfile = ensure_suffix(cmdline.filenames()[0],
-			cmdline.epsOpt.given() ? "eps" : cmdline.pdfOpt.given() ? "pdf" : "dvi");
-		SourceInput srcin(inputfile);
-		if (!srcin.getInputStream(true))
-			throw MessageException("can't open file '" + srcin.getMessageFileName() + "' for reading");
-
-		double start_time = System::time();
-		set_variables(cmdline);
-		SVGOutput out(cmdline.stdoutOpt.given() ? "" : srcin.getFileName(),
-			cmdline.outputOpt.value(),
-			cmdline.zipOpt.given() ? cmdline.zipOpt.value() : 0);
-		pair<int,int> pageinfo;
-		if (cmdline.epsOpt.given() || cmdline.pdfOpt.given()) {
-			auto img2svg = unique_ptr<ImageToSVG>(
-				cmdline.epsOpt.given()
-				? static_cast<ImageToSVG*>(new EPSToSVG(srcin.getFilePath(), out))
-				: static_cast<ImageToSVG*>(new PDFToSVG(srcin.getFilePath(), out)));
-			img2svg->setPageTransformation(get_transformation_string(cmdline));
-			img2svg->convert(cmdline.pageOpt.value(), &pageinfo);
-			timer_message(start_time, img2svg->isSinglePageFormat() ? nullptr : &pageinfo);
-		}
-		else {
-			init_fontmap(cmdline);
-			DVIToSVG dvi2svg(srcin.getInputStream(), out);
-			if (list_page_hashes(cmdline, dvi2svg))
-				return 0;
-			const char *ignore_specials=nullptr;
-			if (cmdline.noSpecialsOpt.given())
-				ignore_specials = cmdline.noSpecialsOpt.value().empty() ? "*" : cmdline.noSpecialsOpt.value().c_str();
-			dvi2svg.setProcessSpecials(ignore_specials, true);
-			dvi2svg.setPageTransformation(get_transformation_string(cmdline));
-			dvi2svg.setPageSize(cmdline.bboxOpt.value());
-
-			dvi2svg.convert(cmdline.pageOpt.value(), &pageinfo);
-			timer_message(start_time, &pageinfo);
-		}
+		size_t numFiles = cmdline.epsOpt.given() ? cmdline.filenames().size() : 1;
+		for (size_t i=0; i < numFiles; i++)
+			convert_file(i, cmdline);
 	}
 	catch (DVIException &e) {
 		Message::estream() << "\nDVI error: " << e.what() << '\n';
@@ -486,6 +508,10 @@ int main (int argc, char *argv[]) {
 	catch (PSException &e) {
 		Message::estream() << "\nPostScript error: " << e.what() << '\n';
 		return -2;
+	}
+	catch (XMLParserException &e) {
+		Message::estream() << "\nXML error: " << e.what() << '\n';
+		return -5;
 	}
 	catch (SignalException &e) {
 		Message::wstream().clearline();

@@ -2,7 +2,7 @@
 ** Font.hpp                                                             **
 **                                                                      **
 ** This file is part of dvisvgm -- a fast DVI to SVG converter          **
-** Copyright (C) 2005-2021 Martin Gieseking <martin.gieseking@uos.de>   **
+** Copyright (C) 2005-2025 Martin Gieseking <martin.gieseking@uos.de>   **
 **                                                                      **
 ** This program is free software; you can redistribute it and/or        **
 ** modify it under the terms of the GNU General Public License as       **
@@ -50,7 +50,7 @@ struct GlyphMetrics {
 	double wl, wr, h, d;
 };
 
-class FontVisitor;
+struct FontVisitor;
 
 /** Abstract base for all font classes. */
 class Font {
@@ -124,7 +124,7 @@ class PhysicalFont : public virtual Font {
 		virtual bool getExactGlyphBox (int c, BoundingBox &bbox, GFGlyphTracer::Callback *cb) const;
 		virtual bool getExactGlyphBox (int c, GlyphMetrics &metrics, bool vertical, GFGlyphTracer::Callback *cb) const;
 		virtual bool isCIDFont () const;
-		virtual int hAdvance () const;
+		virtual int hAverageAdvance () const;
 		virtual std::string familyName () const;
 		virtual std::string styleName () const;
 		virtual double hAdvance (int c) const;
@@ -139,6 +139,7 @@ class PhysicalFont : public virtual Font {
 		virtual CharMapID getCharMapID () const =0;
 		virtual void setCharMapID (const CharMapID &id) {}
 		virtual Character decodeChar (uint32_t c) const;
+		virtual int charIndexByName (const std::string &charname) const;
 		const char* path () const override;
 		void visit (FontVisitor &visitor) override;
 		void visit (FontVisitor &visitor) const override;
@@ -161,7 +162,7 @@ class PhysicalFont : public virtual Font {
 class VirtualFont : public virtual Font {
 	friend class FontManager;
 	public:
-		using DVIVector = std::vector<uint8_t>;
+		using DVIVector = std::vector<char>;
 
 	public:
 		static std::unique_ptr<Font> create (const std::string &name, uint32_t checksum, double dsize, double ssize);
@@ -197,11 +198,11 @@ class TFMFont : public virtual Font {
 };
 
 
-class PhysicalFontProxy : public PhysicalFont {
+class PhysicalFontRef : public PhysicalFont {
 	friend class PhysicalFontImpl;
 	public:
 		std::unique_ptr<Font> clone (double ds, double sc) const override {
-			return std::unique_ptr<PhysicalFontProxy>(new PhysicalFontProxy(*this, ds, sc));
+			return std::unique_ptr<PhysicalFontRef>(new PhysicalFontRef(*this, ds, sc));
 		}
 
 		const Font* uniqueFont () const override             {return _pf;}
@@ -223,8 +224,8 @@ class PhysicalFontProxy : public PhysicalFont {
 		int collectCharMapIDs (std::vector<CharMapID> &charmapIDs) const override {return _pf->collectCharMapIDs(charmapIDs);}
 
 	protected:
-		PhysicalFontProxy (const PhysicalFont *font, double ds, double ss) : _pf(font), _dsize(ds), _ssize(ss) {}
-		PhysicalFontProxy (const PhysicalFontProxy &proxy, double ds, double ss) : _pf(proxy._pf), _dsize(ds), _ssize(ss) {}
+		PhysicalFontRef (const PhysicalFont *font, double ds, double ss) : _pf(font), _dsize(ds), _ssize(ss) {}
+		PhysicalFontRef (const PhysicalFontRef &ref, double ds, double ss) : _pf(ref._pf), _dsize(ds), _ssize(ss) {}
 
 	private:
 		const PhysicalFont *_pf;
@@ -239,7 +240,7 @@ class PhysicalFontImpl : public PhysicalFont, public TFMFont {
 		~PhysicalFontImpl () override;
 
 		std::unique_ptr<Font> clone (double ds, double ss) const override {
-			return std::unique_ptr<PhysicalFontProxy>(new PhysicalFontProxy(this, ds, ss));
+			return std::unique_ptr<PhysicalFontRef>(new PhysicalFontRef(this, ds, ss));
 		}
 
 		const Font* uniqueFont () const override             {return this;}
@@ -270,22 +271,28 @@ class NativeFont : public PhysicalFont {
 		std::unique_ptr<Font> clone (double ds, double sc) const override =0;
 		std::string name () const override;
 		Type type () const override;
-		double designSize () const override  {return _ptsize;}
-		double scaledSize () const override  {return _ptsize;}
+		const NativeFont* uniqueFont () const override   {return this;}
+		double designSize () const override              {return _ptsize;}
+		double scaledSize () const override              {return _ptsize;}
 		double charWidth (int c) const override;
 		double charDepth (int c) const override;
 		double charHeight (int c) const override;
 		double italicCorr (int c) const override;
+		virtual double hAdvance (Character c) const;
+		virtual double vAdvance (Character c) const;
 		const FontMetrics* getMetrics () const override  {return nullptr;}
 		const FontStyle* style () const override         {return &_style;}
 		Color color () const override                    {return _color;}
 		const FontMap::Entry* fontMapEntry () const override {return nullptr;}
+		virtual void mapCharToUnicode (uint32_t c, uint32_t codepoint) =0;
 		static std::string uniqueName (const std::string &path, const FontStyle &style);
 		void visit (FontVisitor &visitor) override;
 		void visit (FontVisitor &visitor) const override;
 
 	protected:
 		NativeFont (double ptsize, const FontStyle &style, Color color) : _ptsize(ptsize), _style(style), _color(color) {}
+		using PhysicalFont::hAdvance;
+		using PhysicalFont::vAdvance;
 
 	private:
 		double _ptsize;    ///< font size in PS point units
@@ -294,26 +301,32 @@ class NativeFont : public PhysicalFont {
 };
 
 
-class NativeFontProxy : public NativeFont {
+class NativeFontRef : public NativeFont {
 	friend class NativeFontImpl;
 	public:
 		std::unique_ptr<NativeFont> clone (double ptsize, const FontStyle &style, Color color) const override {
-			return std::unique_ptr<NativeFontProxy>(new NativeFontProxy(this, ptsize, style, color));
+			return std::unique_ptr<NativeFontRef>(new NativeFontRef(this, ptsize, style, color));
 		}
 
 		std::unique_ptr<Font> clone (double ds, double sc) const override {
-			return std::unique_ptr<NativeFontProxy>(new NativeFontProxy(this , sc, *style(), color()));
+			return std::unique_ptr<NativeFontRef>(new NativeFontRef(this , sc, *style(), color()));
 		}
 
-		const Font* uniqueFont () const override          {return _nfont;}
+		const NativeFont* uniqueFont () const override    {return _nfont;}
 		const char* path () const override                {return _nfont->path();}
 		int fontIndex () const override                   {return _nfont->fontIndex();}
 		Character decodeChar (uint32_t c) const override  {return _nfont->decodeChar(c);}
 		uint32_t unicode (uint32_t c) const override      {return _nfont->unicode(c);}
 		CharMapID getCharMapID () const override          {return _nfont->getCharMapID();}
+		bool verticalLayout() const override              {return _nfont->verticalLayout();}
+		std::string name () const override                {return _nfont->name();}
+
+		void mapCharToUnicode (uint32_t c, uint32_t codepoint) override {
+			const_cast<NativeFont*>(_nfont)->mapCharToUnicode(c, codepoint);
+		}
 
 	protected:
-		NativeFontProxy (const NativeFont *nfont, double ptsize, const FontStyle &style, Color color)
+		NativeFontRef (const NativeFont *nfont, double ptsize, const FontStyle &style, Color color)
 			: NativeFont(ptsize, style, color), _nfont(nfont) {}
 
 	private:
@@ -326,35 +339,39 @@ class NativeFontImpl : public NativeFont {
 		NativeFontImpl (std::string fname, int fontIndex, double ptsize, const FontStyle &style, Color color)
 			: NativeFont(ptsize, style, color), _path(std::move(fname)), _fontIndex(fontIndex) {}
 
+		NativeFontImpl (std::string fname, std::string fontname, double ptsize);
+
 		std::unique_ptr<NativeFont> clone (double ptsize, const FontStyle &style, Color color) const override {
-			return std::unique_ptr<NativeFontProxy>(new NativeFontProxy(this, ptsize, style, color));
+			return std::unique_ptr<NativeFontRef>(new NativeFontRef(this, ptsize, style, color));
 		}
 
 		std::unique_ptr<Font> clone (double ds, double sc) const override {
-			return std::unique_ptr<NativeFontProxy>(new NativeFontProxy(this , sc, *style(), color()));
+			return std::unique_ptr<NativeFontRef>(new NativeFontRef(this , sc, *style(), color()));
 		}
 
-		const Font* uniqueFont () const override          {return this;}
 		const char* path () const override                {return _path.c_str();}
-		int fontIndex() const override                    {return _fontIndex;}
-		std::string fontFamily () const;
+		int fontIndex () const override                   {return _fontIndex;}
+		std::string name () const override                {return _name.empty() ? NativeFont::name() : _name;}
 		bool findAndAssignBaseFontMap () override;
 		CharMapID getCharMapID () const override          {return CharMapID::NONE;}
 		Character decodeChar (uint32_t c) const override;
 		uint32_t unicode (uint32_t c) const override;
+		bool verticalLayout() const override;
+		void mapCharToUnicode (uint32_t c, uint32_t codepoint) override;
 
 	private:
 		std::string _path;
-		int _fontIndex;
+		std::string _name;
+		int _fontIndex = 0;
 		ToUnicodeMap _toUnicodeMap; ///< maps from char indexes to unicode points
 };
 
 
-class VirtualFontProxy : public VirtualFont {
+class VirtualFontRef : public VirtualFont {
 	friend class VirtualFontImpl;
 	public:
 		std::unique_ptr<Font> clone (double ds, double ss) const override {
-			return std::unique_ptr<VirtualFontProxy>(new VirtualFontProxy(*this, ds, ss));
+			return std::unique_ptr<VirtualFontRef>(new VirtualFontRef(*this, ds, ss));
 		}
 
 		const Font* uniqueFont () const override          {return _vf;}
@@ -370,8 +387,8 @@ class VirtualFontProxy : public VirtualFont {
 		const char* path () const override                {return _vf->path();}
 
 	protected:
-		VirtualFontProxy (const VirtualFont *font, double ds, double ss) : _vf(font), _dsize(ds), _ssize(ss) {}
-		VirtualFontProxy (const VirtualFontProxy &proxy, double ds, double ss) : _vf(proxy._vf), _dsize(ds), _ssize(ss) {}
+		VirtualFontRef (const VirtualFont *font, double ds, double ss) : _vf(font), _dsize(ds), _ssize(ss) {}
+		VirtualFontRef (const VirtualFontRef &ref, double ds, double ss) : _vf(ref._vf), _dsize(ds), _ssize(ss) {}
 		void assignChar (uint32_t c, DVIVector &&dvi) override {}
 
 	private:
@@ -385,7 +402,7 @@ class VirtualFontImpl : public VirtualFont, public TFMFont {
 	friend class VirtualFont;
 	public:
 		std::unique_ptr<Font> clone (double ds, double ss) const override {
-			return std::unique_ptr<VirtualFontProxy>(new VirtualFontProxy(this, ds, ss));
+			return std::unique_ptr<VirtualFontRef>(new VirtualFontRef(this, ds, ss));
 		}
 
 		const Font* uniqueFont () const override {return this;}

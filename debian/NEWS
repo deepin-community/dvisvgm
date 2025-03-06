@@ -1,0 +1,22 @@
+dvisvgm (2.13.3-1) unstable; urgency=medium
+
+  A note from upstream:
+
+  Ghostscript has introduced a completely rewritten implementation of its PDF
+  interpreter, which is now implemented in C instead of PostScript. This has a
+  lot of advantages besides the performance improvements. For third-party
+  applications like dvisvgm, however, this change has significant impact on
+  the functions that can be provided. dvisvgm relies on the possibility to
+  overwrite PostScript and PDF operators in order to directly communicate with
+  the interpreter. The nice thing about the current PostScript-based PDF
+  interpreter is the fact that both PostScript and PDF code can be treated
+  almost equally.
+  As of Ghostscript 9.56.0, this will no longer be possible, and as far as I
+  can tell from the documentation, there is no way to replicate the current
+  functionality. As a consequence, all PDF functionality currently available
+  in dvisvgm will no longer work with the upcoming Ghostscript releases.
+  Therefore, it will require the parallel installation of Ghostscript 9.55.0 or
+  earlier. In the long run, I’ll probably have to drop PDF support since I
+  don’t have the resources to implement a completely new PDF handler.
+
+ -- Hilmar Preusse <hille42@web.de>  Tue, 01 Mar 2022 00:10:42 +0100

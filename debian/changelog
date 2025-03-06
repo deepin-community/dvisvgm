@@ -1,3 +1,175 @@
+dvisvgm (3.4.3+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+    - Install upstreams NEWS file.
+
+ -- Hilmar Preuße <hille42@debian.org>  Sun, 05 Jan 2025 11:02:43 +0100
+
+dvisvgm (3.4.2+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Hilmar Preuße <hille42@debian.org>  Mon, 18 Nov 2024 17:34:59 +0100
+
+dvisvgm (3.4.1+ds-1) unstable; urgency=medium
+
+  * New upstream release, refresh patches.
+
+ -- Hilmar Preuße <hille42@debian.org>  Thu, 19 Sep 2024 09:52:23 +0200
+
+dvisvgm (3.4+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Remove "build-needed" restriction from test suite.
+
+ -- Hilmar Preuße <hille42@debian.org>  Sun, 28 Jul 2024 23:17:58 +0200
+
+dvisvgm (3.3+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Hilmar Preusse <hille42@web.de>  Fri, 12 Apr 2024 09:25:21 +0200
+
+dvisvgm (3.2.2+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Hilmar Preusse <hille42@web.de>  Mon, 11 Mar 2024 11:38:24 +0100
+
+dvisvgm (3.2.1+ds-1) unstable; urgency=medium
+
+  * New upstream release, refresh patches.
+  * Lintian: W: dvisvgm source: build-depends-on-obsolete-package
+
+ -- Hilmar Preusse <hille42@web.de>  Sun, 03 Mar 2024 11:55:40 +0100
+
+dvisvgm (3.2+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Remove obsolete patches, add DEP-3 header to the remainings.
+  * Remove obsolete lintian override.
+  * Reorder copyright file, move license wording to the bottom.
+  * Enable some hardening flags in d/rules.
+  * d/gbp.conf: "gbp pull" should update pristine-tar too.
+
+ -- Hilmar Preusse <hille42@web.de>  Mon, 15 Jan 2024 08:16:53 +0000
+
+dvisvgm (3.1.2+ds-1) unstable; urgency=medium
+
+  * New upstream release, disable upstreamed patch.
+
+ -- Hilmar Preusse <hille42@web.de>  Sat, 14 Oct 2023 13:50:25 +0200
+
+dvisvgm (3.1.1+ds-1) unstable; urgency=medium
+
+  * New upstream release, refresh patches.
+  * Remove pre-built manual page from upstream tar ball, instead
+    install all BD's to regenerate it during build (Closes: #1049855).
+
+ -- Hilmar Preusse <hille42@web.de>  Fri, 01 Sep 2023 11:49:02 +0200
+
+dvisvgm (3.1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Hilmar Preusse <hille42@web.de>  Mon, 10 Jul 2023 09:39:47 +0200
+
+dvisvgm (3.0.4-1) unstable; urgency=medium
+
+  * New upstream release.
+    - MD5 functions from libssl are used any more -> Remove B-D.
+
+ -- Hilmar Preusse <hille42@web.de>  Tue, 14 Mar 2023 09:20:23 +0100
+
+dvisvgm (3.0.3-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Hilmar Preusse <hille42@web.de>  Sat, 25 Feb 2023 23:50:21 +0100
+
+dvisvgm (3.0.2-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Hilmar Preusse <hille42@web.de>  Wed, 01 Feb 2023 09:50:16 +0100
+
+dvisvgm (3.0.1-1) unstable; urgency=medium
+
+  * New upstream release, considered to be stable by upstream
+    author. No risc, no fun: upload to unstable.
+  * Add autoconf-archive & libttfautohint-dev to B-D. Do not enable
+    ttfautohint yet, as considered to be experimental.
+  * Bump Standards version, no changes needed.
+
+ -- Hilmar Preusse <hille42@web.de>  Wed, 11 Jan 2023 21:45:24 +0100
+
+dvisvgm (3.0-2) experimental; urgency=medium
+
+  * Add commit 9bf81fd0b6e7876e5079e917ed7e12163b9e7f7f from upstream
+    to solve build failurss w/ ghostscript >= 10.x . (Closes: #1022714).
+  * Add mupdf-tools to Recommends as per upstream:
+    "A new PDF handler based on mutool has been added to keep
+    dvisvgm's PDF conversion functionality available after the removal
+    of Ghostscript's old PDF interpreter announced for version 10.1.0."
+
+ -- Hilmar Preusse <hille42@web.de>  Tue, 08 Nov 2022 10:50:27 +0100
+
+dvisvgm (3.0-1) experimental; urgency=medium
+
+  * New upstream. Considered to be beta by upstream author.
+    - Refreshed patches.
+
+ -- Hilmar Preusse <hille42@web.de>  Tue, 18 Oct 2022 23:13:12 +0200
+
+dvisvgm (2.14-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Add libpotrace-dev, libssl-dev & libxxhash-dev to B-D.
+
+ -- Hilmar Preusse <hille42@web.de>  Mon, 15 Aug 2022 09:28:45 +0200
+
+dvisvgm (2.13.4-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fix entry in d/NEWS (Closes: #1006713).
+  * Replace deps for test suite by "@builddeps@".
+
+ -- Hilmar Preusse <hille42@web.de>  Sun, 24 Apr 2022 00:08:14 +0200
+
+dvisvgm (2.13.3-1) unstable; urgency=medium
+
+  * New upstream release, refresh patches.
+
+ -- Hilmar Preusse <hille42@web.de>  Tue, 01 Mar 2022 23:31:44 +0100
+
+dvisvgm (2.13.1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Hilmar Preusse <hille42@web.de>  Sat, 29 Jan 2022 14:58:09 +0100
+
+dvisvgm (2.13-2) unstable; urgency=medium
+
+  * Fix d/changelog: removed entry for 2.12-4 in last upload....
+
+ -- Hilmar Preusse <hille42@web.de>  Mon, 24 Jan 2022 12:45:51 +0100
+
+dvisvgm (2.13-1) unstable; urgency=medium
+
+  * New upstream release, disable applied patches.
+  * Update d/copyright, lintian override.
+
+ -- Hilmar Preusse <hille42@web.de>  Mon, 24 Jan 2022 00:07:27 +0100
+
+dvisvgm (2.12-4) unstable; urgency=medium
+
+  * autopkgtest: Restrictions: (...), allow-stderr
+    -> re-enable test on armhf.
+  * Add commit 4f6b45d1b9dd96cc8d6dbc2400c65460d5bb2fb3 from upstream
+    to prevent compiler warnings in test suite.
+
+ -- Hilmar Preusse <hille42@web.de>  Thu, 09 Dec 2021 08:37:06 +0100
+
 dvisvgm (2.12-3) unstable; urgency=medium
 
   * Exclude armhf from autopkg test arches: it fails b/c of

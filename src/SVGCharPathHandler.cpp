@@ -2,7 +2,7 @@
 ** SVGCharPathHandler.cpp                                               **
 **                                                                      **
 ** This file is part of dvisvgm -- a fast DVI to SVG converter          **
-** Copyright (C) 2005-2021 Martin Gieseking <martin.gieseking@uos.de>   **
+** Copyright (C) 2005-2025 Martin Gieseking <martin.gieseking@uos.de>   **
 **                                                                      **
 ** This program is free software; you can redistribute it and/or        **
 ** modify it under the terms of the GNU General Public License as       **
@@ -54,13 +54,13 @@ void SVGCharPathHandler::appendChar (uint32_t c, double x, double y) {
 	if (_font.changed()) {
 		_fontColor.set(_font.get()->color());
 		if (_fontColor.changed() && _fontColor.get() != Color::BLACK)
-			_color.changed(true); // ensure application of text color when resetting the font color to black
+			_fillColor.changed(true); // ensure application of text color when resetting the font color to black
 		_font.changed(false);
 	}
 	// Apply text color changes only if the color of the entire font is black.
 	// Glyphs of non-black fonts (e.g. defined in a XeTeX document) can't change their color.
-	CharProperty<Color> &color = (_fontColor.get() != Color::BLACK) ? _fontColor : _color;
-	bool applyColor = color.get() != Color::BLACK;
+	CharProperty<Color> &color = (_fontColor.get() != Color::BLACK) ? _fontColor : _fillColor;
+	bool applyColor = color.get() != Color::BLACK || (SVGElement::USE_CURRENTCOLOR && SVGElement::CURRENTCOLOR == Color::BLACK);
 	bool applyMatrix = !_matrix->isIdentity();
 	bool applyOpacity = !_opacity->isFillDefault();
 	if (!_groupNode) {
@@ -85,16 +85,21 @@ void SVGCharPathHandler::appendChar (uint32_t c, double x, double y) {
 		GlyphMetrics metrics;
 		font->getGlyphMetrics(c, _vertical, metrics);
 		x -= metrics.wl;
-		if (auto pf = font_cast<const PhysicalFont*>(font)) {
-			// Center glyph between top and bottom border of the TFM box.
-			// This is just an approximation used until I find a way to compute
-			// the exact location in vertical mode.
-			GlyphMetrics exact_metrics;
-			pf->getExactGlyphBox(c, exact_metrics, false, nullptr);
-			y += exact_metrics.h+(metrics.d-exact_metrics.h-exact_metrics.d)/2;
+		if (_vertical) {
+			auto physicalFont = font_cast<const PhysicalFont *>(font);
+			if (!physicalFont)
+				y += metrics.d;
+			else {
+				// Center glyph between top and bottom border of the TFM box.
+				// This is just an approximation used until I find a way to compute
+				// the exact location in vertical mode.
+				GlyphMetrics exact_metrics;
+				physicalFont->getExactGlyphBox(c, exact_metrics, false, nullptr);
+				double ed = max(0.0, exact_metrics.d);
+				double eh = max(0.0, exact_metrics.h);
+				y += eh + (metrics.d - eh - ed) / 2;
+			}
 		}
-		else
-			y += metrics.d;
 	}
 	Matrix rotation(1);
 	if (_vertical && !font->verticalLayout()) {
