@@ -2,7 +2,7 @@
 ** PapersizeSpecialHandler.cpp                                          **
 **                                                                      **
 ** This file is part of dvisvgm -- a fast DVI to SVG converter          **
-** Copyright (C) 2005-2021 Martin Gieseking <martin.gieseking@uos.de>   **
+** Copyright (C) 2005-2025 Martin Gieseking <martin.gieseking@uos.de>   **
 **                                                                      **
 ** This program is free software; you can redistribute it and/or        **
 ** modify it under the terms of the GNU General Public License as       **
@@ -28,7 +28,7 @@ void PapersizeSpecialHandler::preprocess (const string&, std::istream &is, Speci
 	string params;
 	is >> params;
 	Length w, h;
-	const size_t splitpos = params.find(',');
+	const auto splitpos = params.find(',');
 	try {
 		if (splitpos == string::npos) {
 			w.set(params);
@@ -56,7 +56,7 @@ void PapersizeSpecialHandler::storePaperSize (unsigned pageno, Length width, Len
 	DoublePair whpair(width.bp(), height.bp());
 	if (_pageSizes.empty() || _pageSizes.back().second != whpair) {
 		if (!_pageSizes.empty() && _pageSizes.back().first == pageno)
-			_pageSizes.back().second = whpair;
+			_pageSizes.back().second = std::move(whpair);
 		else
 			_pageSizes.emplace_back(pageno, whpair);
 	}
@@ -92,7 +92,7 @@ void PapersizeSpecialHandler::dviEndPage (unsigned pageno, SpecialActions &actio
 }
 
 
-vector<const char*> PapersizeSpecialHandler::prefixes() const {
+vector<const char*> PapersizeSpecialHandler::prefixes () const {
 	vector<const char*> pfx {"papersize="};
 	return pfx;
 }

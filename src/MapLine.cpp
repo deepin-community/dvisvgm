@@ -2,7 +2,7 @@
 ** MapLine.cpp                                                          **
 **                                                                      **
 ** This file is part of dvisvgm -- a fast DVI to SVG converter          **
-** Copyright (C) 2005-2021 Martin Gieseking <martin.gieseking@uos.de>   **
+** Copyright (C) 2005-2025 Martin Gieseking <martin.gieseking@uos.de>   **
 **                                                                      **
 ** This program is free software; you can redistribute it and/or        **
 ** modify it under the terms of the GNU General Public License as       **
@@ -37,9 +37,9 @@ MapLine::MapLine (istream &is) : MapLine() {
 
 
 MapLine::MapLine (string str) : MapLine() {
-	size_t pos = str.rfind('\n');
+	auto pos = str.rfind('\n');
 	if (pos != string::npos)
-		str = str.substr(0, pos);
+		str.resize(pos);
 	parse(str.c_str());
 }
 
@@ -75,9 +75,9 @@ bool MapLine::isDVIPSFormat (const char *line) const {
  *  @param[out] sfdname name of subfont definition
  *  @return true on success */
 static bool split_fontname (string &fontname, string &sfdname) {
-	size_t pos1;    // index of first '@'
+	string::size_type pos1;    // index of first '@'
 	if ((pos1 = fontname.find('@')) != string::npos && pos1 > 0) {
-		size_t pos2; // index of second '@'
+		string::size_type pos2; // index of second '@'
 		if ((pos2 = fontname.find('@', pos1+1)) != string::npos && pos2 > pos1+1) {
 			sfdname = fontname.substr(pos1+1, pos2-pos1-1);
 			fontname = fontname.substr(0, pos1) + fontname.substr(pos2+1);
@@ -124,7 +124,7 @@ void MapLine::parseDVIPSLine (InputReader &ir) {
 			if (name.length() > 4 && name.substr(name.length()-4) == ".enc")
 				_encname = name.substr(0, name.length()-4);
 			else
-				_fontfname = name;
+				_fontfname = std::move(name);
 		}
 		else {  // ir.peek() == '"' => list of PS font operators
 			string options = ir.getQuotedString("\"");

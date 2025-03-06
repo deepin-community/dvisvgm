@@ -1,14 +1,15 @@
-Replace python by python3 in Makfiles.
+Description: Replace python by python3 in Makfiles.
+Forwarded: not-needed
+Origin: Debian author.
+Author: Norbert Preining <norbert@preining.info>
 ---
  src/Makefile.am   |    2 +-
  tests/Makefile.am |    2 +-
  4 files changed, 4 insertions(+), 4 deletions(-)
 
-Index: dvisvgm-2.12/src/Makefile.am
-===================================================================
---- dvisvgm-2.12.orig/src/Makefile.am	2021-08-25 22:59:58.428001956 +0200
-+++ dvisvgm-2.12/src/Makefile.am	2021-08-25 22:59:58.416001955 +0200
-@@ -213,7 +213,7 @@
+--- dvisvgm-3.4.1+ds.orig/src/Makefile.am
++++ dvisvgm-3.4.1+ds/src/Makefile.am
+@@ -234,7 +234,7 @@
  # the command-line parser class is generated from options.xml by opt2cpp
  $(srcdir)/CommandLine.hpp: options.xml
  	rm -f $@
@@ -17,11 +18,9 @@ Index: dvisvgm-2.12/src/Makefile.am
  
  # Create a C string definition containing the PostScript routines psdefs.ps needed by class PSInterpreter
  $(srcdir)/psdefs.cpp: psdefs.ps
-Index: dvisvgm-2.12/tests/Makefile.am
-===================================================================
---- dvisvgm-2.12.orig/tests/Makefile.am	2021-08-25 22:59:58.428001956 +0200
-+++ dvisvgm-2.12/tests/Makefile.am	2021-08-25 22:59:58.420001956 +0200
-@@ -50,7 +50,7 @@
+--- dvisvgm-3.4.1+ds.orig/tests/Makefile.am
++++ dvisvgm-3.4.1+ds/tests/Makefile.am
+@@ -44,7 +44,7 @@
  hashcheck_LDADD = $(LIBS_LIBS)
  
  hashcheck.cpp: genhashcheck.py $(dvisvgm_srcdir)/src/AGLTable.hpp $(dvisvgm_srcdir)/libs/xxHash/xxhash.h
@@ -29,4 +28,4 @@ Index: dvisvgm-2.12/tests/Makefile.am
 +	python3 $^ >$@
  
  TESTLIBS = libgtest.la ../src/libdvisvgm.la $(LIBS_LIBS) -lfreetype
- if ENABLE_WOFF
+ TESTLIBS += $(CODE_COVERAGE_LDFLAGS)
